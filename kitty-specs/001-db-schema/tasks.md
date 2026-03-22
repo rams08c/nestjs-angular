@@ -24,10 +24,10 @@
 **Requirements Refs**: FR-001, FR-002, FR-004, FR-008, FR-009, FR-012, FR-014
 
 ### Included Subtasks
-- [ ] T001 Replace `server/prisma/schema.prisma` with final seven-model schema and enums
-- [ ] T002 Add table/column mappings, relation actions, and unique constraints
-- [ ] T003 Configure monetary precision and currency field definitions for `transactions`
-- [ ] T004 Generate and verify initial migration files
+- [x] T001 Replace `server/prisma/schema.prisma` with final seven-model schema and enums
+- [x] T002 Add table/column mappings, relation actions, and unique constraints
+- [x] T003 Configure monetary precision and currency field definitions for `transactions`
+- [x] T004 Generate and verify initial migration files
 - [ ] T005 Validate Prisma client generation and compile-time type output
 
 ### Implementation Notes
