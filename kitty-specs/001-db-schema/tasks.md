@@ -28,7 +28,7 @@
 - [x] T002 Add table/column mappings, relation actions, and unique constraints
 - [x] T003 Configure monetary precision and currency field definitions for `transactions`
 - [x] T004 Generate and verify initial migration files
-- [ ] T005 Validate Prisma client generation and compile-time type output
+- [x] T005 Validate Prisma client generation and compile-time type output
 
 ### Implementation Notes
 - Treat `server/prisma/schema.prisma` as single source of truth.
