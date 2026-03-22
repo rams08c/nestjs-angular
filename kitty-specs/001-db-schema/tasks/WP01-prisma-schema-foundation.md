@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Prisma Schema Foundation
-lane: "doing"
+lane: "for_review"
 dependencies: []
 base_branch: main
 base_commit: c977e9bc7ced964cef242c026b0a2a0c737958f7
@@ -158,3 +158,4 @@ Not adding test suite tasks in this WP. Validation is command-based:
 
 - 2026-03-22T10:00:26Z - system - lane=planned - Prompt created.
 - 2026-03-22T10:15:48Z – codex – shell_pid=10194 – lane=doing – Assigned agent via workflow command
+- 2026-03-22T10:24:17Z – codex – shell_pid=10194 – lane=for_review – Ready for review: Prisma schema + initial SQL migration committed; prisma validate passed. prisma generate is dependency-gated until @prisma/client is installed in backend workspace.
