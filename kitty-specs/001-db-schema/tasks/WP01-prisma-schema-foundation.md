@@ -14,7 +14,7 @@ subtasks:
 - T005
 phase: Phase 1 - Foundation
 assignee: ''
-agent: ''
+agent: "codex"
 shell_pid: "10194"
 review_status: ''
 reviewed_by: ''
@@ -157,3 +157,4 @@ Not adding test suite tasks in this WP. Validation is command-based:
 ## Activity Log
 
 - 2026-03-22T10:00:26Z - system - lane=planned - Prompt created.
+- 2026-03-22T10:15:48Z – codex – shell_pid=10194 – lane=doing – Assigned agent via workflow command
