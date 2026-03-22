@@ -1,0 +1,167 @@
+openapi: "3.0.3"
+info:
+  title: Categories API
+  version: "1.0"
+  description: User-scoped expense/income category management
+
+paths:
+  /categories:
+    get:
+      summary: List all categories for the authenticated user
+      security:
+        - bearerAuth: []
+      tags: [Categories]
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
+        "401":
+          description: Unauthorized
+
+    post:
+      summary: Create a new category
+      security:
+        - bearerAuth: []
+      tags: [Categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryDto'
+      responses:
+        "201":
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        "409":
+          description: Category name already exists for this user
+        "401":
+          description: Unauthorized
+
+  /categories/{id}:
+    get:
+      summary: Get a single category
+      security:
+        - bearerAuth: []
+      tags: [Categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+    patch:
+      summary: Update a category
+      security:
+        - bearerAuth: []
+      tags: [Categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryDto'
+      responses:
+        "200":
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+    delete:
+      summary: Delete a category (blocked if transactions exist)
+      security:
+        - bearerAuth: []
+      tags: [Categories]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "409":
+          description: Cannot delete — transactions reference this category
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateCategoryDto:
+      type: object
+      required: [name, type]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          enum: [INCOME, EXPENSE]
+
+    UpdateCategoryDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          enum: [INCOME, EXPENSE]
+
+    CategoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerUserId:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [INCOME, EXPENSE]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

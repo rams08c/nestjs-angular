@@ -1,0 +1,117 @@
+openapi: "3.0.3"
+info:
+  title: Users API
+  version: "1.0"
+  description: User account management endpoints
+
+paths:
+  /users:
+    post:
+      summary: Create a new user account
+      security: []
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserDto'
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "409":
+          description: Email already in use
+
+  /users/me:
+    get:
+      summary: Get authenticated user
+      security:
+        - bearerAuth: []
+      tags: [Users]
+      responses:
+        "200":
+          description: Current user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "401":
+          description: Unauthorized
+
+    patch:
+      summary: Update authenticated user name
+      security:
+        - bearerAuth: []
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "401":
+          description: Unauthorized
+
+    delete:
+      summary: Delete authenticated user account
+      security:
+        - bearerAuth: []
+      tags: [Users]
+      responses:
+        "204":
+          description: User deleted
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateUserDto:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+
+    UpdateUserDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

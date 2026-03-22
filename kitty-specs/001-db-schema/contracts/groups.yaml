@@ -1,0 +1,165 @@
+openapi: "3.0.3"
+info:
+  title: Groups API
+  version: "1.0"
+  description: Group management for shared expense splitting
+
+paths:
+  /groups:
+    get:
+      summary: List all groups where the authenticated user is a member
+      security:
+        - bearerAuth: []
+      tags: [Groups]
+      responses:
+        "200":
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupResponse'
+        "401":
+          description: Unauthorized
+
+    post:
+      summary: Create a new group (creator auto-assigned OWNER role)
+      security:
+        - bearerAuth: []
+      tags: [Groups]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupDto'
+      responses:
+        "201":
+          description: Group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+        "401":
+          description: Unauthorized
+
+  /groups/{id}:
+    get:
+      summary: Get a single group
+      security:
+        - bearerAuth: []
+      tags: [Groups]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Group details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+    patch:
+      summary: Update group name or description (OWNER only)
+      security:
+        - bearerAuth: []
+      tags: [Groups]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGroupDto'
+      responses:
+        "200":
+          description: Group updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+        "403":
+          description: Forbidden — not group OWNER
+        "401":
+          description: Unauthorized
+
+    delete:
+      summary: Delete a group (OWNER only)
+      security:
+        - bearerAuth: []
+      tags: [Groups]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          description: Forbidden — not group OWNER
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateGroupDto:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          nullable: true
+
+    UpdateGroupDto:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          nullable: true
+
+    GroupResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerUserId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

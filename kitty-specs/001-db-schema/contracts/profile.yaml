@@ -1,0 +1,121 @@
+openapi: "3.0.3"
+info:
+  title: Profile API
+  version: "1.0"
+  description: User profile management — all fields are optional and updatable after account creation
+
+paths:
+  /profile:
+    get:
+      summary: Get authenticated user's profile
+      security:
+        - bearerAuth: []
+      tags: [Profile]
+      responses:
+        "200":
+          description: Profile data (may be null if not yet created)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        "401":
+          description: Unauthorized
+
+    put:
+      summary: Create or fully replace profile
+      security:
+        - bearerAuth: []
+      tags: [Profile]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertProfileDto'
+      responses:
+        "200":
+          description: Profile upserted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        "401":
+          description: Unauthorized
+
+    patch:
+      summary: Partially update profile
+      security:
+        - bearerAuth: []
+      tags: [Profile]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertProfileDto'
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UpsertProfileDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        profilePic:
+          type: string
+          format: uri
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        profilePic:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

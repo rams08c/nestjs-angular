@@ -1,0 +1,126 @@
+openapi: "3.0.3"
+info:
+  title: Group Members API
+  version: "1.0"
+  description: Manage membership for expense splitting groups
+
+paths:
+  /groups/{groupId}/members:
+    get:
+      summary: List all members of a group
+      security:
+        - bearerAuth: []
+      tags: [GroupMembers]
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of group members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupMemberResponse'
+        "404":
+          description: Group not found
+        "401":
+          description: Unauthorized
+
+    post:
+      summary: Add a member to the group (OWNER only)
+      security:
+        - bearerAuth: []
+      tags: [GroupMembers]
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMemberDto'
+      responses:
+        "201":
+          description: Member added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupMemberResponse'
+        "409":
+          description: User is already a member of this group
+        "403":
+          description: Forbidden — not group OWNER
+        "401":
+          description: Unauthorized
+
+  /groups/{groupId}/members/{userId}:
+    delete:
+      summary: Remove a member from the group (OWNER only)
+      security:
+        - bearerAuth: []
+      tags: [GroupMembers]
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Member removed
+        "403":
+          description: Forbidden — not group OWNER
+        "404":
+          description: Member not found in group
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AddMemberDto:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: string
+        role:
+          type: string
+          enum: [MEMBER]
+          default: MEMBER
+          description: Only MEMBER role can be assigned via API; OWNER is assigned at group creation
+
+    GroupMemberResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        groupId:
+          type: string
+        userId:
+          type: string
+        role:
+          type: string
+          enum: [OWNER, MEMBER]
+        joinedAt:
+          type: string
+          format: date-time

@@ -1,0 +1,229 @@
+openapi: "3.0.3"
+info:
+  title: Transactions API
+  version: "1.0"
+  description: Personal and group transaction management (groupId optional — null = personal)
+
+paths:
+  /transactions:
+    get:
+      summary: List all transactions for the authenticated user
+      security:
+        - bearerAuth: []
+      tags: [Transactions]
+      parameters:
+        - name: groupId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by group; omit for personal transactions only
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponse'
+        "401":
+          description: Unauthorized
+
+    post:
+      summary: Create a new transaction
+      security:
+        - bearerAuth: []
+      tags: [Transactions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionDto'
+      responses:
+        "201":
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        "400":
+          description: Validation error (e.g. zero amount)
+        "401":
+          description: Unauthorized
+
+  /transactions/{id}:
+    get:
+      summary: Get a single transaction
+      security:
+        - bearerAuth: []
+      tags: [Transactions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+    patch:
+      summary: Update a transaction
+      security:
+        - bearerAuth: []
+      tags: [Transactions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTransactionDto'
+      responses:
+        "200":
+          description: Transaction updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+    delete:
+      summary: Delete a transaction
+      security:
+        - bearerAuth: []
+      tags: [Transactions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateTransactionDto:
+      type: object
+      required: [categoryId, amount, currency, transactionDate]
+      properties:
+        categoryId:
+          type: string
+        groupId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 4217 currency code (e.g. USD)
+        note:
+          type: string
+          nullable: true
+        transactionDate:
+          type: string
+          format: date
+
+    UpdateTransactionDto:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        groupId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+          exclusiveMinimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        note:
+          type: string
+          nullable: true
+        transactionDate:
+          type: string
+          format: date
+
+    TransactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerUserId:
+          type: string
+        categoryId:
+          type: string
+        groupId:
+          type: string
+          nullable: true
+        amount:
+          type: string
+          description: Decimal string to preserve precision
+        currency:
+          type: string
+        note:
+          type: string
+          nullable: true
+        transactionDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

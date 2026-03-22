@@ -1,0 +1,220 @@
+openapi: "3.0.3"
+info:
+  title: Reports API
+  version: "1.0"
+  description: Hybrid report generation (derived on demand) and persistence (saved snapshots)
+
+paths:
+  /reports:
+    get:
+      summary: List all saved report snapshots for the authenticated user
+      security:
+        - bearerAuth: []
+      tags: [Reports]
+      parameters:
+        - name: groupId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by group; omit for personal reports
+        - name: reportType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PERSONAL_SUMMARY, GROUP_SUMMARY, CATEGORY_BREAKDOWN, DATE_RANGE]
+      responses:
+        "200":
+          description: List of saved reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportResponse'
+        "401":
+          description: Unauthorized
+
+    post:
+      summary: Save (persist) a report snapshot
+      security:
+        - bearerAuth: []
+      tags: [Reports]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportDto'
+      responses:
+        "201":
+          description: Report snapshot saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        "400":
+          description: rangeEnd must be after rangeStart
+        "401":
+          description: Unauthorized
+
+  /reports/generate:
+    post:
+      summary: Generate a derived report without saving it
+      security:
+        - bearerAuth: []
+      tags: [Reports]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateReportDto'
+      responses:
+        "200":
+          description: Generated report (not persisted)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratedReportResponse'
+        "401":
+          description: Unauthorized
+
+  /reports/{id}:
+    get:
+      summary: Get a saved report snapshot by ID
+      security:
+        - bearerAuth: []
+      tags: [Reports]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Report snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+    delete:
+      summary: Delete a saved report snapshot
+      security:
+        - bearerAuth: []
+      tags: [Reports]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+        "401":
+          description: Unauthorized
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateReportDto:
+      type: object
+      required: [reportType, rangeStart, rangeEnd]
+      properties:
+        groupId:
+          type: string
+          nullable: true
+        reportType:
+          type: string
+          enum: [PERSONAL_SUMMARY, GROUP_SUMMARY, CATEGORY_BREAKDOWN, DATE_RANGE]
+        rangeStart:
+          type: string
+          format: date
+        rangeEnd:
+          type: string
+          format: date
+        snapshotData:
+          type: object
+          nullable: true
+          description: Pre-computed aggregate data to persist as snapshot
+
+    GenerateReportDto:
+      type: object
+      required: [reportType, rangeStart, rangeEnd]
+      properties:
+        groupId:
+          type: string
+          nullable: true
+        reportType:
+          type: string
+          enum: [PERSONAL_SUMMARY, GROUP_SUMMARY, CATEGORY_BREAKDOWN, DATE_RANGE]
+        rangeStart:
+          type: string
+          format: date
+        rangeEnd:
+          type: string
+          format: date
+
+    ReportResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        ownerUserId:
+          type: string
+        groupId:
+          type: string
+          nullable: true
+        reportType:
+          type: string
+        rangeStart:
+          type: string
+          format: date
+        rangeEnd:
+          type: string
+          format: date
+        snapshotData:
+          type: object
+          nullable: true
+        generatedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    GeneratedReportResponse:
+      type: object
+      properties:
+        reportType:
+          type: string
+        rangeStart:
+          type: string
+          format: date
+        rangeEnd:
+          type: string
+          format: date
+        groupId:
+          type: string
+          nullable: true
+        data:
+          type: object
+          description: Aggregated report output; shape varies by reportType
+        generatedAt:
+          type: string
+          format: date-time
