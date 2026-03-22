@@ -1,8 +1,11 @@
 ---
 work_package_id: WP01
 title: Prisma Schema Foundation
-lane: planned
+lane: "doing"
 dependencies: []
+base_branch: main
+base_commit: c977e9bc7ced964cef242c026b0a2a0c737958f7
+created_at: '2026-03-22T10:15:48.452621+00:00'
 subtasks:
 - T001
 - T002
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 1 - Foundation
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "10194"
 review_status: ''
 reviewed_by: ''
 history:
