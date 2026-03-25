@@ -23,11 +23,11 @@
 **Requirements Refs**: FR-005, FR-006
 
 ### Included Subtasks
-- [ ] T001 Add auth credential fields to user persistence model (`passwordHash`, `refreshTokenHash`)
-- [ ] T002 Add constraints/index updates for unique email lookup reliability
-- [ ] T003 Generate and apply Prisma migration for auth fields
-- [ ] T004 Regenerate Prisma client after schema update
-- [ ] T005 Validate migration rollback/readiness and local DB sync
+- [x] T001 Add auth credential fields to user persistence model (`passwordHash`, `refreshTokenHash`)
+- [x] T002 Add constraints/index updates for unique email lookup reliability
+- [x] T003 Generate and apply Prisma migration for auth fields
+- [x] T004 Regenerate Prisma client after schema update
+- [x] T005 Validate migration rollback/readiness and local DB sync
 
 ### Implementation Notes
 - Preserve existing DB rules and normalized structure.
