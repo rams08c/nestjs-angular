@@ -14,7 +14,7 @@ subtasks:
 - T005
 phase: Phase 1 - Foundation
 assignee: ''
-agent: ''
+agent: "copilot"
 shell_pid: "3075"
 review_status: ''
 reviewed_by: ''
@@ -142,3 +142,4 @@ Success criteria:
 ## Activity Log
 
 - 2026-03-22T11:17:43Z - system - lane=planned - Prompt created.
+- 2026-03-25T17:19:57Z – copilot – shell_pid=3075 – lane=doing – Assigned agent via workflow command
