@@ -1,7 +1,7 @@
 ---
 work_package_id: WP01
 title: Auth Schema Foundation
-lane: "doing"
+lane: "for_review"
 dependencies: []
 base_branch: main
 base_commit: e0205f8ea28a02106bfc4d437d2a3a5fe53b2531
@@ -143,3 +143,4 @@ Success criteria:
 
 - 2026-03-22T11:17:43Z - system - lane=planned - Prompt created.
 - 2026-03-25T17:19:57Z – copilot – shell_pid=3075 – lane=doing – Assigned agent via workflow command
+- 2026-03-25T17:33:09Z – copilot – shell_pid=3075 – lane=for_review – Ready for review: Added passwordHash (NOT NULL) and refreshTokenHash (nullable) to User model, created migration 20260325173130_add_auth_fields_to_user, schema validated and DB synced, Prisma client regenerated
