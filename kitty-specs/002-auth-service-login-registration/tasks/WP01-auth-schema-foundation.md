@@ -1,8 +1,11 @@
 ---
 work_package_id: WP01
 title: Auth Schema Foundation
-lane: planned
+lane: "doing"
 dependencies: []
+base_branch: main
+base_commit: e0205f8ea28a02106bfc4d437d2a3a5fe53b2531
+created_at: '2026-03-25T17:19:57.506138+00:00'
 subtasks:
 - T001
 - T002
@@ -12,7 +15,7 @@ subtasks:
 phase: Phase 1 - Foundation
 assignee: ''
 agent: ''
-shell_pid: ''
+shell_pid: "3075"
 review_status: ''
 reviewed_by: ''
 history:
