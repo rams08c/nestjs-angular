@@ -1,0 +1,86 @@
+<div class="min-h-screen flex items-center justify-center bg-base-200">
+  <div class="card bg-base-100 shadow-xl w-full max-w-sm mx-4">
+    <div class="card-body">
+      <h2 class="card-title text-2xl font-bold justify-center mb-6">Login</h2>
+
+      <!-- Submit Error Message -->
+      @if (submitError()) {
+        <div class="alert alert-error" role="alert">
+          <span class="text-sm">{{ submitError() }}</span>
+        </div>
+      }
+
+      <!-- Login Form -->
+      <form (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Email Field -->
+        <div class="form-control">
+          <label class="label" for="email">
+            <span class="label-text">Email</span>
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            class="input input-bordered"
+            [class.input-error]="isFieldInvalid('email')"
+            [value]="email()"
+            (change)="onEmailChange($event.target.value)"
+            [disabled]="isSubmitting()"
+          />
+          @if (isFieldInvalid('email')) {
+            <label class="label">
+              <span class="label-text-alt text-error">{{ getFieldError('email') }}</span>
+            </label>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-control">
+          <label class="label" for="password">
+            <span class="label-text">Password</span>
+          </label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••"
+            class="input input-bordered"
+            [class.input-error]="isFieldInvalid('password')"
+            [value]="password()"
+            (change)="onPasswordChange($event.target.value)"
+            [disabled]="isSubmitting()"
+          />
+          @if (isFieldInvalid('password')) {
+            <label class="label">
+              <span class="label-text-alt text-error">{{ getFieldError('password') }}</span>
+            </label>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-control mt-6">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!isFormValid() || isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <span class="loading loading-spinner loading-sm"></span>
+              Logging in...
+            } @else {
+              Login
+            }
+          </button>
+        </div>
+      </form>
+
+      <!-- Register Link -->
+      <div class="text-center text-sm mt-4">
+        No account?
+        <a routerLink="/register" class="link link-primary">Register</a>
+      </div>
+
+      <!-- Back to Home -->
+      <a routerLink="/" class="btn btn-ghost btn-sm mt-2">&#8592; Back to Home</a>
+    </div>
+  </div>
+</div>
