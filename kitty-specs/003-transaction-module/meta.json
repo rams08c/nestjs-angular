@@ -2,8 +2,10 @@
   "feature_number": "003",
   "slug": "003-transaction-module",
   "feature_slug": "003-transaction-module",
-  "friendly_name": "transaction module",
+  "friendly_name": "Transaction Module",
   "mission": "software-dev",
   "target_branch": "main",
-  "created_at": "2026-03-26T05:24:46.297559+00:00"
+  "created_at": "2026-03-26T05:24:46.297559+00:00",
+  "source_description": "CRUD transaction module for a money tracking app — personal expense/income records linked to authenticated user via JWT, with optional groupId for future group transactions.",
+  "vcs": "git"
 }

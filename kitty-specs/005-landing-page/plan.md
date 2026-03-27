@@ -1,108 +1,148 @@
-# Implementation Plan: [FEATURE]
-*Path: [templates/plan-template.md](templates/plan-template.md)*
+# Implementation Plan: Landing Page
 
-
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/kitty-specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `/spec-kitty.plan` command. See `src/specify_cli/missions/software-dev/command-templates/plan.md` for the execution workflow.
-
-The planner will not begin until all planning questions have been answered—capture those answers in this document before progressing to later phases.
+**Branch**: `[main]`  
+**Date**: 2026-03-27  
+**Spec**: `kitty-specs/005-landing-page/spec.md`
+**Input**: Feature specification from `kitty-specs/005-landing-page/spec.md`
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Deliver a public pre-login landing page in the Angular client with sections for navbar, hero, features, dashboard preview, and footer. Route users to `/login` and `/register` from landing CTAs and nav links. Scope is UI-only with no API integration.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: TypeScript 5.9.x with Angular 21.2.x  
+**Primary Dependencies**: Angular standalone components, Angular Router, Tailwind CSS, DaisyUI  
+**Storage**: N/A (no data persistence for this feature)  
+**Testing**: Angular unit tests and route rendering checks via existing test setup  
+**Target Platform**: Modern desktop and mobile browsers  
+**Project Type**: Web frontend (client-only scope for this feature)  
+**Performance Goals**:
+- Landing page first render should appear quickly with static content and no blocking API calls.
+- Navigation actions to `/login` and `/register` should respond immediately.
+**Constraints**:
+- No authentication required to view landing page.
+- No backend integration, no API calls, no domain mutations.
+- Use Tailwind CSS + DaisyUI for styling system.
+- Keep implementation in existing Angular app structure.
+**Scale/Scope**:
+- One public landing route and two navigation targets.
+- Five UI sections with responsive behavior across mobile/tablet/desktop.
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+Gate status before research: PASS
 
-[Gates determined based on constitution file]
+- Angular version rule: PASS (feature remains on Angular 21.2.2 workspace)
+- Standalone component rule: PASS (plan uses standalone Angular components only)
+- Styling rule: PASS (Tailwind + DaisyUI required and accepted)
+- Authentication rule: PASS (feature is frontend public page; no backend endpoint contract changes)
+- Separation of concerns rule: PASS (presentation in components, behavior in service/router where needed)
+
+Post-design gate re-check: PASS
 
 ## Project Structure
 
-### Documentation (this feature)
+### Documentation Artifacts (this feature)
 
 ```
-kitty-specs/[###-feature]/
-├── plan.md              # This file (/spec-kitty.plan command output)
-├── research.md          # Phase 0 output (/spec-kitty.plan command)
-├── data-model.md        # Phase 1 output (/spec-kitty.plan command)
-├── quickstart.md        # Phase 1 output (/spec-kitty.plan command)
-├── contracts/           # Phase 1 output (/spec-kitty.plan command)
-└── tasks.md             # Phase 2 output (/spec-kitty.tasks command - NOT created by /spec-kitty.plan)
+kitty-specs/005-landing-page/
+├── plan.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+└── contracts/
+    └── README.md
 ```
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### Source Code Scope (repository root)
 
 ```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
+client/
 ├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+│   ├── app/
+│   │   ├── app.routes.ts
+│   │   ├── app.ts
+│   │   ├── app.html
+│   │   ├── app.css
+│   │   ├── landing-page/
+│   │   │   ├── landing-page.ts
+│   │   │   └── landing-page.html
+│   │   ├── shared/
+│   │   │   ├── navbar/
+│   │   │   │   ├── navbar.ts
+│   │   │   │   └── navbar.html
+│   │   │   └── footer/
+│   │   │       ├── footer.ts
+│   │   │       └── footer.html
+│   │   └── auth/
+│   │       ├── login/
+│   │       │   └── login.ts
+│   │       └── register/
+│   │           └── register.ts
+│   └── styles.css
+└── package.json
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Use the existing Angular client application. No backend or database paths are part of this feature plan.
+
+## Phase 0: Research Plan
+
+Research goals and resolved decisions:
+
+- Decision: Implement landing page as public route in the existing Angular app.
+  - Rationale: Keeps user flow simple and aligns with spec scope.
+  - Alternatives considered: Separate microsite was rejected as out of scope.
+- Decision: Keep all visuals static with mock dashboard cards/charts.
+  - Rationale: Requirement is UI-only and pre-login discovery.
+  - Alternatives considered: Live analytics preview rejected due to no API integration.
+- Decision: Use Tailwind utility classes with DaisyUI components.
+  - Rationale: Matches project UI rules and requested style constraints.
+  - Alternatives considered: Custom CSS-only approach rejected.
+
+Research output path: `kitty-specs/005-landing-page/research.md`
+
+## Phase 1: Design and Contracts
+
+### Data Model Design
+
+Design lightweight UI entities for rendering only:
+
+- LandingSection
+- FeatureCard
+- DashboardPreviewCard
+- CtaAction
+- NavigationLink
+
+Data model output path: `kitty-specs/005-landing-page/data-model.md`
+
+### Contract Design
+
+No backend API endpoints are introduced in this feature.
+
+- Contract output path: `kitty-specs/005-landing-page/contracts/README.md`
+- Statement: UI-only feature; route navigation contracts are internal frontend routing behavior.
+
+### Quickstart Design
+
+Provide concise implementation and verification steps for:
+
+- route registration
+- section composition
+- responsive checks
+- navigation validation to `/login` and `/register`
+
+Quickstart output path: `kitty-specs/005-landing-page/quickstart.md`
+
+### Agent Context Update
+
+- Agent update script placeholder in template is unavailable as a concrete executable in this repository.
+- No agent-specific context file was modified.
 
 ## Complexity Tracking
 
-*Fill ONLY if Constitution Check has violations that must be justified*
+No constitution violations and no complexity exceptions.
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+## Stop Point
+
+This plan execution stops after plan/research/data-model/contracts/quickstart artifact generation. No tasks.md expansion and no WP files are created.

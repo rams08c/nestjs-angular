@@ -1,0 +1,96 @@
+<app-navbar />
+
+<!-- ===== HERO ===== -->
+<section class="hero min-h-[70vh] bg-gradient-to-br from-primary/10 to-base-100 px-4">
+  <div class="hero-content text-center flex-col max-w-2xl">
+    <h1 class="text-4xl lg:text-6xl font-extrabold text-base-content leading-tight">
+      Take Control of<br />
+      <span class="text-primary">Your Money</span>
+    </h1>
+    <p class="text-lg text-base-content/70 mt-4 max-w-lg">
+      Track expenses, split bills with friends, and understand your spending — all in one clean dashboard.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3 mt-8">
+      <a routerLink="/register" class="btn btn-primary btn-lg">Get Started</a>
+      <a routerLink="/login" class="btn btn-outline btn-lg">Login</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="py-20 px-4 bg-base-200">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold text-center text-base-content mb-2">Everything You Need</h2>
+    <p class="text-center text-base-content/60 mb-12">Powerful tools to manage your financial life.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      @for (feature of features; track feature.title) {
+        <div class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow">
+          <div class="card-body items-center text-center">
+            <div class="text-4xl mb-2">{{ feature.icon }}</div>
+            <h3 class="card-title text-base-content">{{ feature.title }}</h3>
+            <p class="text-base-content/60 text-sm">{{ feature.description }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ===== DASHBOARD PREVIEW ===== -->
+<section class="py-20 px-4 bg-base-100">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold text-center text-base-content mb-2">Your Dashboard at a Glance</h2>
+    <p class="text-center text-base-content/60 mb-12">Get a bird's-eye view of your finances instantly.</p>
+
+    <!-- Summary stats -->
+    <div class="stats stats-vertical sm:stats-horizontal shadow w-full mb-8 bg-base-200">
+      @for (card of summaryCards; track card.label) {
+        <div class="stat">
+          <div class="stat-title">{{ card.label }}</div>
+          <div class="stat-value text-xl {{ card.color }}">{{ card.value }}</div>
+        </div>
+      }
+    </div>
+
+    <!-- Chart placeholders -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="card bg-base-200 shadow">
+        <div class="card-body">
+          <h3 class="card-title text-sm text-base-content/70">Spending Trend</h3>
+          <div class="flex items-end gap-2 h-32 mt-2">
+            @for (h of [55, 80, 45, 90, 60, 75, 50]; track h) {
+              <div class="flex-1 bg-primary/40 rounded-t" [style.height.%]="h"></div>
+            }
+          </div>
+          <div class="flex justify-between text-xs text-base-content/40 mt-1">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200 shadow">
+        <div class="card-body">
+          <h3 class="card-title text-sm text-base-content/70">Category Split</h3>
+          <div class="mt-4 space-y-2">
+            @for (item of [
+              {label: 'Food & Dining', pct: 38, color: 'bg-primary'},
+              {label: 'Transport', pct: 22, color: 'bg-secondary'},
+              {label: 'Entertainment', pct: 18, color: 'bg-accent'},
+              {label: 'Utilities', pct: 22, color: 'bg-neutral'}
+            ]; track item.label) {
+              <div class="flex items-center gap-3 text-sm">
+                <span class="w-28 text-base-content/70 truncate">{{ item.label }}</span>
+                <div class="flex-1 bg-base-300 rounded-full h-2">
+                  <div class="{{ item.color }} h-2 rounded-full" [style.width.%]="item.pct"></div>
+                </div>
+                <span class="text-base-content/60 w-8 text-right">{{ item.pct }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-footer />

@@ -1,0 +1,12 @@
+{
+  "wp_id": "WP01",
+  "feature_slug": "002-auth-service-login-registration",
+  "worktree_path": ".worktrees/002-auth-service-login-registration-WP01",
+  "branch_name": "002-auth-service-login-registration-WP01",
+  "base_branch": "main",
+  "base_commit": "e0205f8ea28a02106bfc4d437d2a3a5fe53b2531",
+  "dependencies": [],
+  "created_at": "2026-03-25T17:19:57.506138+00:00",
+  "created_by": "implement-command",
+  "vcs_backend": "git"
+}

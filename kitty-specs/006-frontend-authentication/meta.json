@@ -2,8 +2,10 @@
   "feature_number": "006",
   "slug": "006-frontend-authentication",
   "feature_slug": "006-frontend-authentication",
-  "friendly_name": "frontend authentication",
+  "friendly_name": "Frontend Authentication",
   "mission": "software-dev",
   "target_branch": "main",
-  "created_at": "2026-03-27T11:10:53.053565+00:00"
+  "created_at": "2026-03-27T11:10:53.053565+00:00",
+  "source_description": "Angular v21.2.2 frontend auth module with Signal-based forms, JWT token management, HTTP interceptor, and auth state service.",
+  "vcs": "git"
 }

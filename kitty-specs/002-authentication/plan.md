@@ -1,108 +1,97 @@
-# Implementation Plan: [FEATURE]
-*Path: [templates/plan-template.md](templates/plan-template.md)*
+# Implementation Plan: Authentication
 
+**Branch**: `main` | **Date**: 2026-03-26 | **Spec**: [kitty-specs/002-authentication/spec.md](spec.md)
+**Input**: Feature specification from `kitty-specs/002-authentication/spec.md`
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/kitty-specs/[###-feature-name]/spec.md`
+## Engineering Alignment
 
-**Note**: This template is filled in by the `/spec-kitty.plan` command. See `src/specify_cli/missions/software-dev/command-templates/plan.md` for the execution workflow.
-
-The planner will not begin until all planning questions have been answered—capture those answers in this document before progressing to later phases.
+Use the existing backend stack and defaults: NestJS v11.0.6, Prisma ORM, PostgreSQL v18.1, JWT auth, bcrypt password hashing, DTO validation, and guarded routes by default.
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Implement a minimal auth module with register and login endpoints, unique email enforcement, hashed password storage, JWT issuance with userId payload, and JWT guard enforcement for all non-public endpoints.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: TypeScript 5.x with NestJS v11.0.6
+**Primary Dependencies**: `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, `bcrypt`, `class-validator`, `class-transformer`, Prisma Client
+**Storage**: PostgreSQL v18.1 via Prisma ORM
+**Testing**: Jest unit tests and e2e tests
+**Target Platform**: Node.js backend service
+**Project Type**: Web application backend module
+**Performance Goals**: Auth endpoint p95 under 300ms for normal local workload
+**Constraints**: Controllers stay thin, service-only business logic, all protected routes require valid Bearer JWT
+**Scale/Scope**: Initial auth for application users; supports future user-scoped modules
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+| Rule | Source | Status | Notes |
+|------|--------|--------|-------|
+| NestJS v11.0.6 required | Backend Rules | PASS | Locked in plan and implementation scope |
+| Feature-based modules | Backend Rules | PASS | `auth` module isolated under backend source |
+| Thin controllers only | Backend Rules | PASS | Validation and orchestration in service layer |
+| DTO validation required | Backend Rules | PASS | Register/Login DTOs with validators |
+| Prisma only for data access | Backend Rules | PASS | No direct SQL |
+| JWT required by default | Authentication Rules | PASS | Global guard strategy with public exceptions |
+| Public routes limited | Authentication Rules | PASS | Only `/auth/register` and `/auth/login` are public |
+| userId extracted from JWT | Authentication Rules | PASS | Payload includes `userId`; used in downstream modules |
+| Data operations user-scoped | Authentication Rules | PASS | User lookup and ownership flow scoped by `userId` |
+| PostgreSQL v18.1 + migrations | Database Rules | PASS | Prisma schema + migration workflow |
+
+Post-design re-check: PASS. No constitution conflicts detected.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```
-kitty-specs/[###-feature]/
-├── plan.md              # This file (/spec-kitty.plan command output)
-├── research.md          # Phase 0 output (/spec-kitty.plan command)
-├── data-model.md        # Phase 1 output (/spec-kitty.plan command)
-├── quickstart.md        # Phase 1 output (/spec-kitty.plan command)
-├── contracts/           # Phase 1 output (/spec-kitty.plan command)
-└── tasks.md             # Phase 2 output (/spec-kitty.tasks command - NOT created by /spec-kitty.plan)
+kitty-specs/002-authentication/
+├── plan.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+├── contracts/
+│   └── auth.yaml
+└── tasks.md
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+server/
+├── prisma/
+│   └── schema.prisma
+└── src/
+    ├── app.module.ts
+    ├── auth/
+    │   ├── auth.module.ts
+    │   ├── auth.controller.ts
+    │   ├── auth.service.ts
+    │   ├── auth.guard.ts
+    │   ├── jwt.strategy.ts
+    │   └── dto/
+    │       ├── register.dto.ts
+    │       └── login.dto.ts
+    └── prisma/
+        ├── prisma.module.ts
+        └── prisma.service.ts
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Web app backend structure under `server/` with feature module separation.
+
+## Phase 0 Output Plan
+
+- Create `kitty-specs/002-authentication/research.md` with decisions for hashing, JWT claims, guard behavior, and endpoint status codes.
+
+## Phase 1 Output Plan
+
+- Create `kitty-specs/002-authentication/data-model.md` with User/Auth entities and validation rules.
+- Create `kitty-specs/002-authentication/contracts/auth.yaml` for register/login contracts.
+- Create `kitty-specs/002-authentication/quickstart.md` with concise setup and verification steps.
+- Agent context update script: NOT RUN (no agent update script found in `.kittify/scripts/`).
 
 ## Complexity Tracking
 
-*Fill ONLY if Constitution Check has violations that must be justified*
-
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+No constitution violations. No complexity override required.

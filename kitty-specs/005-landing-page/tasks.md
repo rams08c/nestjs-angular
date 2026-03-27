@@ -13,9 +13,11 @@
 **Independent Test**: Navigating to `/` in browser loads a blank placeholder page without any authentication redirect.
 
 ### Included Subtasks
-- [ ] T001 Register `/` route in `client/src/app/app.routes.ts` pointing to the landing page component
-- [ ] T002 Verify `/login` and `/register` routes exist and are public
-- [ ] T003 Create `landing-page` standalone component scaffold in `client/src/app/`
+- [x] T001 Register `/` route in `client/src/app/app.routes.ts` pointing to the landing page component
+- [x] T002 Verify `/login` and `/register` routes exist and are public
+- [x] T003 Create `landing-page` standalone component scaffold in `client/src/app/landing-page/`
+- [x] T003a Create `Navbar` standalone shared component in `client/src/app/shared/navbar/`
+- [x] T003b Create `Footer` standalone shared component in `client/src/app/shared/footer/`
 
 ### Implementation Notes
 - Use Angular standalone component pattern per constitution.
@@ -34,7 +36,7 @@
 
 ## WP02: Navbar and Hero Section (Priority: P1)
 
-**Goal**: Build the top navigation bar and the hero section as the first visible experience for landing visitors.
+**Goal**: Build the top navigation bar as a shared component and the hero section as the first visible experience for landing visitors.
 **Independent Test**: Opening `/` renders a full-width navbar with branding left and Login/Register links right, followed by a hero with title, subtitle, and two CTA buttons.
 
 ### Included Subtasks
@@ -116,7 +118,7 @@
 
 ## WP05: Footer and Final Polish (Priority: P3)
 
-**Goal**: Complete the page with a footer and validate full responsive behavior across all viewport sizes.
+**Goal**: Build the footer as a shared component and validate full responsive behavior across all viewport sizes.
 **Independent Test**: Footer is visible below all sections; no horizontal scroll or broken layout at 375px, 768px, and 1440px viewport widths.
 
 ### Included Subtasks

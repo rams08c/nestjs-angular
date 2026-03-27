@@ -2,8 +2,10 @@
   "feature_number": "005",
   "slug": "005-landing-page",
   "feature_slug": "005-landing-page",
-  "friendly_name": "landing page",
+  "friendly_name": "Landing Page",
   "mission": "software-dev",
   "target_branch": "main",
-  "created_at": "2026-03-27T05:27:31.190924+00:00"
+  "created_at": "2026-03-27T05:27:31.190924+00:00",
+  "source_description": "Public pre-login landing page for money tracking app with navbar, hero, features, dashboard preview, footer, and login/register routes.",
+  "vcs": "git"
 }

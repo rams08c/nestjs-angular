@@ -2,8 +2,10 @@
   "feature_number": "004",
   "slug": "004-category-module",
   "feature_slug": "004-category-module",
-  "friendly_name": "category module",
+  "friendly_name": "Category Module",
   "mission": "software-dev",
   "target_branch": "main",
-  "created_at": "2026-03-26T06:07:22.094576+00:00"
+  "created_at": "2026-03-26T06:07:22.094576+00:00",
+  "source_description": "Minimal Category module with system and user categories, JWT-linked ownership for user categories, and full CRUD endpoints with system category protection.",
+  "vcs": "git"
 }
