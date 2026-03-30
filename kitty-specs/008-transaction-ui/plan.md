@@ -1,108 +1,100 @@
-# Implementation Plan: [FEATURE]
-*Path: [templates/plan-template.md](templates/plan-template.md)*
+# Implementation Plan: Transaction UI
 
-
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
-**Input**: Feature specification from `/kitty-specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `/spec-kitty.plan` command. See `src/specify_cli/missions/software-dev/command-templates/plan.md` for the execution workflow.
-
-The planner will not begin until all planning questions have been answered—capture those answers in this document before progressing to later phases.
+**Feature**: 008-transaction-ui  
+**Branch**: main  
+**Spec**: /Users/ramkrist/Desktop/Developement/angular-proj/nestjs-angular/kitty-specs/008-transaction-ui/spec.md  
+**Mission**: software-dev  
+**Scope**: Frontend-only
 
 ## Summary
 
-[Extract from feature spec: primary requirement + technical approach from research]
+Implement dashboard-integrated transaction UI with inline DaisyUI drawer/modal for add/edit and confirmation modal for delete. Use Signal-based forms only, shared Validation Service, global Signal Service for state, and Data Flow Service for dashboard-wide synchronization. Restrict visibility to authenticated users only.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+- **Language/Version**: TypeScript 5.x, Angular 21.2.2
+- **Primary Dependencies**: Angular Router, Angular Signals, `@angular/forms/signals`, Tailwind CSS, DaisyUI
+- **Storage**: Frontend in-memory signal state
+- **Testing**: Angular unit tests (Jasmine/Karma)
+- **Target Platform**: Web SPA
+- **Project Type**: Frontend feature in monorepo
+- **Performance Goals**: Immediate list update after add/edit/delete without full page reload
+- **Constraints**:
+  - Signal-based forms only
+  - No Reactive Forms
+  - No Template-driven forms
+  - Dashboard inline drawer/modal UX
+  - Authenticated-user-only transaction visibility
+- **Scale/Scope**: Single dashboard transaction module integration
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
-
-[Gates determined based on constitution file]
+- ✓ Angular v21.2.2 + standalone component architecture
+- ✓ Signal-based forms only
+- ✓ Shared Validation Service reused
+- ✓ Global Signal Service for state
+- ✓ Data Flow Service for cross-component updates
+- ✓ Tailwind + DaisyUI usage
+- ✓ Authenticated user visibility rule respected
+- ✓ No backend contract change required for frontend-only plan
 
 ## Project Structure
 
-### Documentation (this feature)
+### Documentation Artifacts
 
+```text
+kitty-specs/008-transaction-ui/
+├── spec.md
+├── plan.md
+├── research.md
+├── data-model.md
+├── quickstart.md
+├── checklists/
+├── research/
+└── tasks/
 ```
-kitty-specs/[###-feature]/
-├── plan.md              # This file (/spec-kitty.plan command output)
-├── research.md          # Phase 0 output (/spec-kitty.plan command)
-├── data-model.md        # Phase 1 output (/spec-kitty.plan command)
-├── quickstart.md        # Phase 1 output (/spec-kitty.plan command)
-├── contracts/           # Phase 1 output (/spec-kitty.plan command)
-└── tasks.md             # Phase 2 output (/spec-kitty.tasks command - NOT created by /spec-kitty.plan)
-```
 
-### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
+### Planned Source Touch Points
 
-```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
+```text
+client/src/app/
+├── dashboard/
+│   ├── dashboard.ts
+│   ├── dashboard.html
 │   ├── components/
-│   ├── pages/
+│   │   └── recent-transactions/
 │   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+│       └── dashboard-signal.service.ts
+├── shared-services/
+│   ├── signal.service.ts
+│   ├── data-flow.service.ts
+│   └── validation.service.ts
+└── app.constant.ts
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+## Phase Outputs
 
-## Complexity Tracking
+- Phase 0: `research.md` with resolved UX/state/form decisions
+- Phase 1: `data-model.md`, `quickstart.md`
+- `contracts/`: skipped for this feature because scope is frontend-only and no API change is planned
 
-*Fill ONLY if Constitution Check has violations that must be justified*
+## Execution Steps
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+1. Add transaction list section into dashboard integration area.
+2. Render transaction fields: amount, category, date, optional description.
+3. Add edit/delete icons at top-right per transaction item.
+4. Implement inline DaisyUI drawer/modal for add/edit form.
+5. Implement inline DaisyUI modal for delete confirmation.
+6. Validate inputs through shared Validation Service.
+7. Read/write transaction state through Signal Service.
+8. Propagate changes through Data Flow Service for dashboard sync.
+9. Enforce authenticated-user-only list visibility.
+
+## Risks
+
+- Frontend-only state does not persist without backend integration.
+- Follow-up feature is required for backend persistence/contracts.
+
+## Stop Point
+
+Planning phase complete. No tasks/WP files generated in this step.
