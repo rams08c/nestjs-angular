@@ -10,11 +10,12 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { DataFlowService } from '../services/data-flow.service';
+import { DataFlowService } from '../../shared-services/data-flow.service';
+import { APP_API_ENDPOINTS } from '../../app.constant';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private excludedRoutes = ['/api/auth/login', '/api/auth/register', '/auth/login', '/auth/register'];
+  private excludedRoutes = [APP_API_ENDPOINTS.AUTH.LOGIN, APP_API_ENDPOINTS.AUTH.REGISTER];
 
   constructor(private dataFlowService: DataFlowService, private router: Router) {}
 

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { DataFlowService } from '../shared-services/data-flow.service';
 import { Navbar } from '../shared/navbar/navbar';
 import { Footer } from '../shared/footer/footer';
 
@@ -8,7 +9,16 @@ import { Footer } from '../shared/footer/footer';
   imports: [RouterLink, Navbar, Footer],
   templateUrl: './landing-page.html',
 })
-export class LandingPage {
+export class LandingPage implements OnInit {
+  private router = inject(Router);
+  private dataFlowService = inject(DataFlowService);
+
+  ngOnInit(): void {
+    if (this.dataFlowService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
   readonly features = [
     {
       icon: '💸',

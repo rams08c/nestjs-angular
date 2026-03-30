@@ -1,133 +1,117 @@
-<div class="min-h-screen flex items-center justify-center bg-base-200">
-  <div class="card bg-base-100 shadow-xl w-full max-w-sm mx-4">
-    <div class="card-body">
-      <h2 class="card-title text-2xl font-bold justify-center mb-6">Register</h2>
+<app-navbar></app-navbar>
 
-      <!-- Submit Error Message -->
-      @if (submitError()) {
-        <div class="alert alert-error" role="alert">
-          <span class="text-sm">{{ submitError() }}</span>
-        </div>
-      }
+<section class="hero min-h-[calc(100vh-9rem)] bg-gradient-to-br from-primary/10 to-base-100 px-4 py-10">
+  <div class="hero-content mx-auto w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center py-4">
+    <div class="text-center lg:text-left max-w-xl mx-auto lg:mx-0 order-2 lg:order-1">
+      <h1 class="text-4xl lg:text-5xl font-extrabold text-base-content leading-tight">
+        {{ authText.REGISTER_HERO_TITLE_LINE_1 }}<br />
+        <span class="text-primary">{{ authText.REGISTER_HERO_TITLE_HIGHLIGHT }}</span>
+      </h1>
+      <p class="text-base-content/70 mt-4 text-base lg:text-lg">
+        {{ authText.REGISTER_HERO_SUBTITLE }}
+      </p>
+    </div>
 
-      <!-- Register Form -->
-      <form (ngSubmit)="onSubmit()" class="space-y-4">
-        <!-- Name Field -->
-        <div class="form-control">
-          <label class="label" for="name">
-            <span class="label-text">Full Name</span>
-          </label>
-          <input
-            id="name"
-            type="text"
-            placeholder="John Doe"
-            class="input input-bordered"
-            [class.input-error]="isFieldInvalid('name')"
-            [value]="name()"
-            (change)="onNameChange($event.target.value)"
-            [disabled]="isSubmitting()"
-          />
-          @if (isFieldInvalid('name')) {
-            <label class="label">
-              <span class="label-text-alt text-error">{{ getFieldError('name') }}</span>
-            </label>
-          }
-        </div>
+    <div class="card bg-base-100 shadow-xl w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end border border-base-300/60 order-1 lg:order-2">
+      <div class="card-body">
+        <h2 class="card-title text-2xl font-bold justify-center mb-6">{{ authText.REGISTER_TITLE }}</h2>
 
-        <!-- Email Field -->
-        <div class="form-control">
-          <label class="label" for="email">
-            <span class="label-text">Email</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            class="input input-bordered"
-            [class.input-error]="isFieldInvalid('email')"
-            [value]="email()"
-            (change)="onEmailChange($event.target.value)"
-            [disabled]="isSubmitting()"
-          />
-          @if (isFieldInvalid('email')) {
-            <label class="label">
-              <span class="label-text-alt text-error">{{ getFieldError('email') }}</span>
-            </label>
-          }
-        </div>
-
-        <!-- Password Field -->
-        <div class="form-control">
-          <label class="label" for="password">
-            <span class="label-text">Password</span>
-          </label>
-          <input
-            id="password"
-            type="password"
-            placeholder="••••••"
-            class="input input-bordered"
-            [class.input-error]="isFieldInvalid('password')"
-            [value]="password()"
-            (change)="onPasswordChange($event.target.value)"
-            [disabled]="isSubmitting()"
-          />
-          @if (isFieldInvalid('password')) {
-            <label class="label">
-              <span class="label-text-alt text-error">{{ getFieldError('password') }}</span>
-            </label>
-          }
-          <label class="label">
-            <span class="label-text-alt text-xs">Min 6 characters, 1 uppercase, 1 number</span>
-          </label>
-        </div>
-
-        <!-- Confirm Password Field -->
-        <div class="form-control">
-          <label class="label" for="confirmPassword">
-            <span class="label-text">Confirm Password</span>
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            placeholder="••••••"
-            class="input input-bordered"
-            [class.input-error]="isFieldInvalid('confirmPassword')"
-            [value]="confirmPassword()"
-            (change)="onConfirmPasswordChange($event.target.value)"
-            [disabled]="isSubmitting()"
-          />
-          @if (isFieldInvalid('confirmPassword')) {
-            <label class="label">
-              <span class="label-text-alt text-error">{{ getFieldError('confirmPassword') }}</span>
-            </label>
-          }
-        </div>
-
-        <!-- Submit Button -->
-        <div class="form-control mt-6">
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="!isFormValid() || isSubmitting()"
-          >
-            @if (isSubmitting()) {
-              <span class="loading loading-spinner loading-sm"></span>
-              Registering...
-            } @else {
-              Register
+        <!-- Register Form -->
+        <form class="space-y-4" [formRoot]="registerForm">
+          <!-- Name Field -->
+          <div class="flex flex-col gap-1">
+            <label for="name" class="text-sm font-medium text-base-content/80">{{ authText.REGISTER_NAME_LABEL }}</label>
+            <input
+              id="name"
+              type="text"
+              [formField]="registerForm.name"
+              [placeholder]="authText.REGISTER_NAME_PLACEHOLDER"
+              class="input input-bordered w-full"
+              [class.input-error]="registerForm.name().invalid() && registerForm.name().touched()"
+            />
+            @if (registerForm.name().invalid() && registerForm.name().touched()) {
+              @for (error of registerForm.name().errors(); track error) {
+                <p class="text-xs text-error mt-1 break-words">{{ error.message }}</p>
+              }
             }
-          </button>
+          </div>
+
+          <!-- Email Field -->
+          <div class="flex flex-col gap-1">
+            <label for="email" class="text-sm font-medium text-base-content/80">{{ authText.REGISTER_EMAIL_LABEL }}</label>
+            <input
+              id="email"
+              type="email"
+              [formField]="registerForm.email"
+              [placeholder]="authText.REGISTER_EMAIL_PLACEHOLDER"
+              class="input input-bordered w-full"
+              [class.input-error]="registerForm.email().invalid() && registerForm.email().touched()"
+            />
+            @if (registerForm.email().invalid() && registerForm.email().touched()) {
+              @for (error of registerForm.email().errors(); track error) {
+                <p class="text-xs text-error mt-1 break-words">{{ error.message }}</p>
+              }
+            }
+          </div>
+
+          <!-- Password Field -->
+          <div class="flex flex-col gap-1">
+            <label for="password" class="text-sm font-medium text-base-content/80">{{ authText.REGISTER_PASSWORD_LABEL }}</label>
+            <input
+              id="password"
+              type="password"
+              [formField]="registerForm.password"
+              [placeholder]="authText.REGISTER_PASSWORD_PLACEHOLDER"
+              class="input input-bordered w-full"
+              [class.input-error]="registerForm.password().invalid() && registerForm.password().touched()"
+            />
+            @if (registerForm.password().invalid() && registerForm.password().touched()) {
+              @for (error of registerForm.password().errors(); track error) {
+                <p class="text-xs text-error mt-1 break-words">{{ error.message }}</p>
+              }
+            }
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div class="flex flex-col gap-1">
+            <label for="confirmPassword" class="text-sm font-medium text-base-content/80">{{ authText.REGISTER_CONFIRM_PASSWORD_LABEL }}</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              [formField]="registerForm.confirmPassword"
+              [placeholder]="authText.REGISTER_CONFIRM_PASSWORD_PLACEHOLDER"
+              class="input input-bordered w-full"
+              [class.input-error]="registerForm.confirmPassword().invalid() && registerForm.confirmPassword().touched()"
+            />
+            @if (registerForm.confirmPassword().invalid() && registerForm.confirmPassword().touched()) {
+              @for (error of registerForm.confirmPassword().errors(); track error) {
+                <p class="text-xs text-error mt-1 break-words">{{ error.message }}</p>
+              }
+            }
+          </div>
+
+          <!-- Submit Button -->
+          <div class="mt-6">
+            <button
+              type="submit"
+              class="btn btn-primary w-full"
+              [disabled]="registerForm().invalid()">
+                {{ authText.REGISTER_SUBMIT }}
+            </button>
+          </div>
+        </form>
+
+        <!-- Login Link -->
+        <div class="text-center text-sm mt-4">
+          {{ authText.REGISTER_ALREADY_HAVE_ACCOUNT }}
+          <a routerLink="/login" class="link link-primary">{{ authText.REGISTER_LOGIN_LINK }}</a>
         </div>
-      </form>
 
-      <!-- Login Link -->
-      <div class="text-center text-sm mt-4">
-        Already have an account?
-        <a routerLink="/login" class="link link-primary">Login</a>
+        <!-- Back to Home -->
+        <a routerLink="/" class="btn btn-ghost btn-sm mt-2">{{ authText.BACK_TO_HOME }}</a>
       </div>
-
-      <!-- Back to Home -->
-      <a routerLink="/" class="btn btn-ghost btn-sm mt-2">&#8592; Back to Home</a>
     </div>
   </div>
-</div>
+</section>
+
+<app-footer></app-footer>

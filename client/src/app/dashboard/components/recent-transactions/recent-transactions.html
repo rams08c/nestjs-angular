@@ -1,0 +1,63 @@
+<div class="card bg-base-100 border border-base-300 shadow-sm">
+  <div class="card-body p-4">
+    <h3 class="font-semibold text-base-content mb-3">{{ text.RECENT_TRANSACTIONS_TITLE }}</h3>
+    @if (loadingTransactions()) {
+      <div class="space-y-2" aria-live="polite">
+        <div class="skeleton h-10 w-full"></div>
+        <div class="skeleton h-10 w-full"></div>
+      </div>
+      <p class="mt-3 text-xs text-base-content/60">{{ text.TRANSACTIONS_LOADING }}</p>
+    } @else {
+      <ul class="divide-y divide-base-200" role="list">
+        @for (tx of transactions(); track tx.id) {
+          <li class="py-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex flex-col min-w-0">
+                <span class="text-sm font-medium text-base-content">{{ tx.categoryName }}</span>
+                <span class="text-xs text-base-content/60">{{ tx.date.slice(0, 10) }}</span>
+                @if (tx.description) {
+                  <span class="text-xs text-base-content/70 truncate">{{ tx.description }}</span>
+                }
+              </div>
+
+              <div class="flex items-start gap-2">
+                <span class="text-sm font-semibold text-base-content">
+                  {{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
+                </span>
+                <button
+                  type="button"
+                  class="btn btn-ghost btn-xs"
+                  (click)="onEdit(tx.id)"
+                  aria-label="Edit transaction"
+                >
+                  <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current" aria-hidden="true">
+                    <path d="M4 20h4l10-10-4-4L4 16v4Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="m12 6 4 4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-ghost btn-xs text-error"
+                  (click)="onDelete(tx.id)"
+                  aria-label="Delete transaction"
+                >
+                  <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current" aria-hidden="true">
+                    <path d="M4 7h16" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M10 11v6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14 11v6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M6 7l1 12h10l1-12" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M9 7V4h6v3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+
+      @if (!transactions().length) {
+        <p class="mt-3 text-sm text-base-content/70">{{ text.TRANSACTIONS_EMPTY }}</p>
+      }
+    }
+  </div>
+</div>

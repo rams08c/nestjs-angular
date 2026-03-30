@@ -1,0 +1,19 @@
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <!-- Total Balance -->
+  <div class="stat bg-base-100 border border-base-300 rounded-xl shadow-sm">
+    <div class="stat-title text-base-content/60">{{ text.TOTAL_BALANCE_LABEL }}</div>
+    <div class="stat-value text-primary text-2xl">{{ summary().totalBalance | currency:'USD':'symbol':'1.2-2' }}</div>
+  </div>
+
+  <!-- Monthly Income -->
+  <div class="stat bg-base-100 border border-base-300 rounded-xl shadow-sm">
+    <div class="stat-title text-base-content/60">{{ text.MONTHLY_INCOME_LABEL }}</div>
+    <div class="stat-value text-success text-2xl">{{ summary().monthlyIncome | currency:'USD':'symbol':'1.2-2' }}</div>
+  </div>
+
+  <!-- Monthly Expenses -->
+  <div class="stat bg-base-100 border border-base-300 rounded-xl shadow-sm">
+    <div class="stat-title text-base-content/60">{{ text.MONTHLY_EXPENSES_LABEL }}</div>
+    <div class="stat-value text-error text-2xl">{{ summary().monthlyExpenses | currency:'USD':'symbol':'1.2-2' }}</div>
+  </div>
+</div>

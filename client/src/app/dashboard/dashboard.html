@@ -1,0 +1,62 @@
+<div class="flex h-screen bg-base-200 overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="hidden lg:flex flex-shrink-0" role="navigation" aria-label="Main navigation">
+    <app-sidebar-nav />
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 overflow-y-auto" id="main-content">
+    <!-- Header -->
+    <div class="sticky top-0 z-10 bg-base-200/80 backdrop-blur-sm border-b border-base-300 px-6 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold text-base-content">{{ text.PAGE_TITLE }}</h1>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        (click)="openAddTransaction()"
+        [disabled]="!isAuthenticated()"
+      >
+        {{ text.ADD_TRANSACTION_BTN }}
+      </button>
+    </div>
+
+    <!-- Content sections -->
+    <div class="p-6 space-y-6">
+
+      <!-- Top: Financial overview cards -->
+      <section aria-label="Financial overview">
+        <app-financial-overview />
+      </section>
+
+      <!-- Middle: Spending trend -->
+      <section aria-label="Spending trend">
+        <app-spending-trend />
+      </section>
+
+      <!-- Bottom: Transactions + Budget + Categories -->
+      @if (loadError()) {
+        <div class="alert alert-error" role="alert">
+          <span>{{ loadError() }}</span>
+        </div>
+      }
+
+      <section class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" aria-label="Activity and insights">
+        @if (isAuthenticated()) {
+          <app-recent-transactions class="xl:col-span-1" />
+        }
+        <app-budget-progress class="xl:col-span-1" />
+        <app-top-categories class="xl:col-span-1" />
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Right panel (lg+) -->
+  <aside class="hidden lg:flex flex-shrink-0 border-l border-base-300 bg-base-100 overflow-y-auto" aria-label="User panel">
+    <app-right-panel />
+  </aside>
+
+  <app-transaction-form />
+  <app-delete-confirm />
+
+</div>

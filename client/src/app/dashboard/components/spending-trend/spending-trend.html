@@ -1,0 +1,28 @@
+<div class="card bg-base-100 border border-base-300 shadow-sm">
+  <div class="card-body p-4">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold text-base-content">{{ text.SPENDING_TREND_TITLE }}</h3>
+      <span class="text-xs text-base-content/50">{{ text.SPENDING_TREND_SUBTITLE }}</span>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="flex items-end gap-0.5 h-32" role="img" [attr.aria-label]="text.SPENDING_TREND_TITLE">
+      @for (point of trend(); track point.date) {
+        <div
+          class="flex-1 bg-primary/50 rounded-t hover:bg-primary transition-colors"
+          [style.height.%]="barHeight(point.amount)"
+          [title]="point.date + ': $' + point.amount"
+        ></div>
+      }
+    </div>
+
+    <!-- X-axis labels — show every 5th day -->
+    <div class="flex justify-between text-xs text-base-content/40 mt-1 px-0.5">
+      @for (point of trend(); track point.date; let i = $index) {
+        @if (i % 5 === 0) {
+          <span>{{ shortDate(point.date) }}</span>
+        }
+      }
+    </div>
+  </div>
+</div>

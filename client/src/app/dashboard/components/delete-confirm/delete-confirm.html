@@ -1,0 +1,27 @@
+@if (deleteState().isOpen) {
+  <dialog class="modal modal-open" aria-labelledby="delete-confirm-title" aria-modal="true" role="dialog">
+    <div class="modal-box">
+      <h3 id="delete-confirm-title" class="text-lg font-semibold">{{ text.TRANSACTION_DELETE_TITLE }}</h3>
+      <p class="py-3 text-sm text-base-content/80">{{ text.TRANSACTION_DELETE_PROMPT }}</p>
+
+      @if (targetTransaction()) {
+        <div class="rounded-lg border border-base-300 p-3 text-sm">
+          <p class="font-medium">{{ targetTransaction()!.categoryName }}</p>
+          <p class="text-base-content/70">{{ targetTransaction()!.date }}</p>
+          @if (targetTransaction()!.description) {
+            <p class="text-base-content/70">{{ targetTransaction()!.description }}</p>
+          }
+        </div>
+      }
+
+      <div class="modal-action">
+        <button type="button" class="btn btn-ghost" (click)="close()">{{ text.TRANSACTION_CANCEL }}</button>
+        <button type="button" class="btn btn-error" (click)="confirm()">{{ text.TRANSACTION_DELETE_CONFIRM }}</button>
+      </div>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button type="button" (click)="close()" aria-label="Close delete confirmation">close</button>
+    </form>
+  </dialog>
+}

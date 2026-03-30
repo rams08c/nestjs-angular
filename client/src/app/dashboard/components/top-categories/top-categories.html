@@ -1,0 +1,30 @@
+<div class="card bg-base-100 border border-base-300 shadow-sm">
+  <div class="card-body p-4">
+    <h3 class="font-semibold text-base-content mb-3">{{ text.TOP_CATEGORIES_TITLE }}</h3>
+
+    <!-- Stacked bar -->
+    <div class="flex rounded-full overflow-hidden h-4 mb-4" role="img" [attr.aria-label]="text.TOP_CATEGORIES_TITLE">
+      @for (cat of topCategories(); track cat.category; let i = $index) {
+        <div
+          class="h-full transition-all"
+          [class]="colors[i]"
+          [style.width.%]="cat.percentage"
+          [title]="cat.category + ' ' + cat.percentage + '%'"
+        ></div>
+      }
+    </div>
+
+    <!-- Legend -->
+    <ul class="space-y-1" role="list">
+      @for (cat of topCategories(); track cat.category; let i = $index) {
+        <li class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full inline-block" [class]="colors[i]" aria-hidden="true"></span>
+            <span class="text-base-content">{{ cat.category }}</span>
+          </div>
+          <span class="text-base-content/60">{{ cat.percentage }}%</span>
+        </li>
+      }
+    </ul>
+  </div>
+</div>

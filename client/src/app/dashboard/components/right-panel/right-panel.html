@@ -1,0 +1,29 @@
+<aside class="flex flex-col gap-4 p-4 w-72">
+  <!-- User info -->
+  @if (currentUser()) {
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
+      <div class="card-body p-4">
+        <div class="flex items-center gap-3">
+          <div class="avatar placeholder">
+            <div class="bg-primary text-primary-content rounded-full w-10">
+              <span class="text-lg font-bold">{{ currentUser()!.name.charAt(0).toUpperCase() }}</span>
+            </div>
+          </div>
+          <div>
+            <p class="font-semibold text-base-content text-sm">{{ currentUser()!.name }}</p>
+            <p class="text-xs text-base-content/60">{{ currentUser()!.email }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Upgrade card -->
+  <div class="card bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
+    <div class="card-body p-4">
+      <h3 class="font-bold text-base-content text-sm">{{ text.USER_UPGRADE_TITLE }}</h3>
+      <p class="text-xs text-base-content/70 mt-1">{{ text.USER_UPGRADE_DESC }}</p>
+      <button class="btn btn-primary btn-sm mt-3" type="button">{{ text.USER_UPGRADE_BTN }}</button>
+    </div>
+  </div>
+</aside>

@@ -1,95 +1,69 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FormField, FormRoot, form, validateStandardSchema } from '@angular/forms/signals';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { ValidationService, ValidationResult } from '../services/validation.service';
-import { DataFlowService } from '../services/data-flow.service';
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-  };
-}
+import { DataFlowService } from '../../shared-services/data-flow.service';
+import { AuthService } from '../services/auth.service';
+import { defaultLoginModel, LoginModel, LoginSchema } from './login.model';
+import { APP_TEXT } from '../../app.constant';
+import { Navbar } from '../../shared/navbar/navbar';
+import { Footer } from '../../shared/footer/footer';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FormField, FormRoot, Navbar, Footer],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login implements OnInit {
-  private http = inject(HttpClient);
-  private router = inject(Router);
-  private validationService = inject(ValidationService);
-  private dataFlowService = inject(DataFlowService);
+  loginModel = signal<LoginModel>(defaultLoginModel);
+  loginForm: any;
 
-  email = signal('');
-  password = signal('');
+  private router = inject(Router);
+  private dataFlowService = inject(DataFlowService);
+  private authService = inject(AuthService);
+
   isSubmitting = signal(false);
   submitError = signal<string | null>(null);
+  readonly authText = APP_TEXT.AUTH;
 
-  formErrors = signal<ValidationResult[]>([]);
-  isFormValid = computed(() => this.validationService.isFormValid(this.formErrors()));
+  constructor() {
+    this.loginForm = form(
+      this.loginModel,
+      (schemaPath) => {
+        validateStandardSchema(schemaPath, LoginSchema);
+      },
+      {
+        submission: {
+          action: async () => {
+            this.onSubmit();
+          },
+        },
+      },
+    );
+  }
 
   ngOnInit(): void {
-    // Check if already logged in
     if (this.dataFlowService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
     }
   }
 
-  onEmailChange(value: string): void {
-    this.email.set(value);
-    this.validateFormRealTime();
-  }
-
-  onPasswordChange(value: string): void {
-    this.password.set(value);
-    this.validateFormRealTime();
-  }
-
-  private validateFormRealTime(): void {
-    const errors = this.validationService.validateLoginForm({
-      email: this.email(),
-      password: this.password(),
-    });
-    this.formErrors.set(errors);
-  }
-
   onSubmit(): void {
-    // Final validation
-    const errors = this.validationService.validateLoginForm({
-      email: this.email(),
-      password: this.password(),
-    });
-
-    if (!this.validationService.isFormValid(errors)) {
-      this.formErrors.set(errors);
+    if (this.loginForm().invalid()) {
       return;
     }
 
     this.isSubmitting.set(true);
     this.submitError.set(null);
 
-    const loginRequest: LoginRequest = {
-      email: this.email(),
-      password: this.password(),
-    };
+    const { email, password } = this.loginForm().value();
 
-    this.http.post<LoginResponse>('/api/auth/login', loginRequest).subscribe({
-      next: (response) => {
-        this.dataFlowService.loginUser(response.user, response.token);
+    this.authService.login(email, password).subscribe({
+      next: () => {
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
@@ -97,19 +71,9 @@ export class Login implements OnInit {
         if (error.error?.error) {
           this.submitError.set(error.error.error);
         } else {
-          this.submitError.set('Login failed. Please try again.');
+          this.submitError.set(this.authText.LOGIN_FAILED_TRY_AGAIN);
         }
       },
     });
-  }
-
-  getFieldError(fieldName: string): string | undefined {
-    const error = this.formErrors().find((e) => e.field === fieldName);
-    return error?.message;
-  }
-
-  isFieldInvalid(fieldName: string): boolean {
-    const error = this.formErrors().find((e) => e.field === fieldName);
-    return error ? !error.isValid : false;
   }
 }

@@ -1,0 +1,96 @@
+@if (formState().isOpen) {
+  <dialog class="modal modal-open" aria-labelledby="transaction-form-title" aria-modal="true" role="dialog">
+    <div class="modal-box">
+      <h3 id="transaction-form-title" class="text-lg font-semibold mb-4">{{ title() }}</h3>
+
+      @if (formState().submitError) {
+        <div class="alert alert-error mb-3" role="alert">
+          <span>{{ formState().submitError }}</span>
+        </div>
+      }
+
+      <form class="space-y-3" [formRoot]="transactionForm">
+        <div class="flex flex-col gap-1">
+          <label for="transaction-amount" class="text-sm font-medium">{{ text.TRANSACTION_AMOUNT_LABEL }}</label>
+          <input
+            id="transaction-amount"
+            type="number"
+            class="input input-bordered w-full"
+            [formField]="transactionForm.amount"
+            [class.input-error]="transactionForm.amount().invalid() && transactionForm.amount().touched()"
+          />
+          @if (transactionForm.amount().invalid() && transactionForm.amount().touched()) {
+            @for (error of transactionForm.amount().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="transaction-category" class="text-sm font-medium">{{ text.TRANSACTION_CATEGORY_LABEL }}</label>
+          <select
+            id="transaction-category"
+            class="select select-bordered w-full"
+            [formField]="transactionForm.categoryId"
+            [class.select-error]="transactionForm.categoryId().invalid() && transactionForm.categoryId().touched()"
+          >
+            <option value="">{{ text.TRANSACTION_CATEGORY_PLACEHOLDER }}</option>
+            @for (category of categories(); track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+            }
+          </select>
+          @if (loadingCategories()) {
+            <p class="text-xs text-base-content/60">{{ text.TRANSACTIONS_LOADING }}</p>
+          }
+          @if (transactionForm.categoryId().invalid() && transactionForm.categoryId().touched()) {
+            @for (error of transactionForm.categoryId().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="transaction-date" class="text-sm font-medium">{{ text.TRANSACTION_DATE_LABEL }}</label>
+          <input
+            id="transaction-date"
+            type="date"
+            class="input input-bordered w-full"
+            [formField]="transactionForm.date"
+            [class.input-error]="transactionForm.date().invalid() && transactionForm.date().touched()"
+          />
+          @if (transactionForm.date().invalid() && transactionForm.date().touched()) {
+            @for (error of transactionForm.date().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="transaction-description" class="text-sm font-medium">{{ text.TRANSACTION_DESCRIPTION_LABEL }}</label>
+          <textarea
+            id="transaction-description"
+            class="textarea textarea-bordered w-full"
+            [formField]="transactionForm.description"
+            [placeholder]="text.TRANSACTION_DESCRIPTION_PLACEHOLDER"
+          ></textarea>
+        </div>
+
+        <div class="modal-action">
+          <button type="button" class="btn btn-ghost" (click)="close()">{{ text.TRANSACTION_CANCEL }}</button>
+          <button type="submit" class="btn btn-primary" [disabled]="transactionForm().invalid() || formState().isSubmitting">
+            @if (formState().isSubmitting) {
+              <span class="loading loading-spinner loading-sm"></span>
+              {{ text.TRANSACTION_SAVING }}
+            } @else {
+              {{ text.TRANSACTION_SAVE }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button type="button" (click)="close()" aria-label="Close transaction form">close</button>
+    </form>
+  </dialog>
+}

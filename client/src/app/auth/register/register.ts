@@ -1,128 +1,75 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { email, FormRoot,form,FormField, required, minLength, pattern,validateStandardSchema, disabled} from '@angular/forms/signals';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { ValidationService, ValidationResult } from '../services/validation.service';
-import { DataFlowService } from '../services/data-flow.service';
-
-interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface RegisterResponse {
-  message: string;
-  redirect?: string;
-}
-
+import { DataFlowService } from '../../shared-services/data-flow.service';
+import { ValidationService } from '../../shared-services/validation.service';
+import { AuthService } from '../services/auth.service';
+import { RegisterModel,defaultRegisterModel, RegisterSchema } from './register.model';
+import { APP_TEXT } from '../../app.constant';
+import { Navbar } from '../../shared/navbar/navbar';
+import { Footer } from '../../shared/footer/footer';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, FormField, FormRoot, Navbar, Footer],
   templateUrl: './register.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register implements OnInit {
-  private http = inject(HttpClient);
-  private router = inject(Router);
-  private validationService = inject(ValidationService);
-  private dataFlowService = inject(DataFlowService);
-
-  name = signal('');
-  email = signal('');
-  password = signal('');
-  confirmPassword = signal('');
+  registerModel = signal<RegisterModel>(defaultRegisterModel);
+  registerForm :any;
+  readonly authText = APP_TEXT.AUTH;
   isSubmitting = signal(false);
   submitError = signal<string | null>(null);
 
-  formErrors = signal<ValidationResult[]>([]);
-  isFormValid = computed(() => this.validationService.isFormValid(this.formErrors()));
+  private router = inject(Router);
+  private dataFlowService = inject(DataFlowService);
+  private authService = inject(AuthService);
 
+  constructor(private readonly validationService: ValidationService){
+     this.registerForm = form(this.registerModel,(schemaPath)=> {
+       validateStandardSchema(schemaPath,RegisterSchema);
+       this.validationService.checkEmailAvailability(schemaPath);
+       
+     },
+     {
+       submission:{
+          action : async (f) => {
+             this.onSubmit();
+             f().reset({...defaultRegisterModel});
+          },
+       }
+     }
+    );
+  }
   ngOnInit(): void {
-    // Check if already logged in
     if (this.dataFlowService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
     }
   }
 
-  onNameChange(value: string): void {
-    this.name.set(value);
-    this.validateFormRealTime();
-  }
-
-  onEmailChange(value: string): void {
-    this.email.set(value);
-    this.validateFormRealTime();
-  }
-
-  onPasswordChange(value: string): void {
-    this.password.set(value);
-    this.validateFormRealTime();
-  }
-
-  onConfirmPasswordChange(value: string): void {
-    this.confirmPassword.set(value);
-    this.validateFormRealTime();
-  }
-
-  private validateFormRealTime(): void {
-    const errors = this.validationService.validateRegisterForm({
-      name: this.name(),
-      email: this.email(),
-      password: this.password(),
-      confirmPassword: this.confirmPassword(),
-    });
-    this.formErrors.set(errors);
-  }
-
-  onSubmit(): void {
-    // Final validation
-    const errors = this.validationService.validateRegisterForm({
-      name: this.name(),
-      email: this.email(),
-      password: this.password(),
-      confirmPassword: this.confirmPassword(),
-    });
-
-    if (!this.validationService.isFormValid(errors)) {
-      this.formErrors.set(errors);
-      return;
+  onSubmit(){
+    if(this.registerForm().valid()){
+      const { name, email, password } = this.registerForm().value();
+      this.isSubmitting.set(true);
+      this.submitError.set(null);
+      this.authService.register(name, email, password).subscribe({
+        next: () => {
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          this.isSubmitting.set(false);
+          if (error.error?.error) {
+            this.submitError.set(error.error.error);
+          } else {
+            this.submitError.set('Registration failed. Please try again.');
+          }
+        },
+      });
     }
-
-    this.isSubmitting.set(true);
-    this.submitError.set(null);
-
-    const registerRequest: RegisterRequest = {
-      name: this.name(),
-      email: this.email(),
-      password: this.password(),
-    };
-
-    this.http.post<RegisterResponse>('/api/auth/register', registerRequest).subscribe({
-      next: (response) => {
-        this.router.navigate(['/login']);
-      },
-      error: (error) => {
-        this.isSubmitting.set(false);
-        if (error.error?.error) {
-          this.submitError.set(error.error.error);
-        } else {
-          this.submitError.set('Registration failed. Please try again.');
-        }
-      },
-    });
   }
-
-  getFieldError(fieldName: string): string | undefined {
-    const error = this.formErrors().find((e) => e.field === fieldName);
-    return error?.message;
-  }
-
-  isFieldInvalid(fieldName: string): boolean {
-    const error = this.formErrors().find((e) => e.field === fieldName);
-    return error ? !error.isValid : false;
-  }
+  
 }

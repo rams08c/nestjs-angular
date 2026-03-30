@@ -1,0 +1,22 @@
+<div class="card bg-base-100 border border-base-300 shadow-sm">
+  <div class="card-body p-4">
+    <h3 class="font-semibold text-base-content mb-3">{{ text.BUDGET_PROGRESS_TITLE }}</h3>
+    <ul class="space-y-3" role="list">
+      @for (cat of budgetProgress(); track cat.category) {
+        <li>
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-base-content">{{ cat.category }}</span>
+            <span class="text-base-content/60">${{ cat.spent }} / ${{ cat.allocated }}</span>
+          </div>
+          <progress
+            class="progress w-full"
+            [class]="progressColor(cat)"
+            [value]="percentage(cat)"
+            max="100"
+            [attr.aria-label]="cat.category + ' budget progress'"
+          ></progress>
+        </li>
+      }
+    </ul>
+  </div>
+</div>
