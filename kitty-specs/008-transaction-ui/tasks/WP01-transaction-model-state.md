@@ -1,24 +1,27 @@
 ---
-work_package_id: "WP01"
-subtasks:
-  - "T001"
-  - "T002"
-  - "T003"
-title: "Transaction Model and State Foundation"
-phase: "Phase 1 - Foundation"
-lane: "planned"
+work_package_id: WP01
+title: Transaction Model and State Foundation
+lane: "doing"
 dependencies: []
-assignee: ""
-agent: ""
-shell_pid: ""
-review_status: ""
-reviewed_by: ""
+base_branch: main
+base_commit: 4e6b8710438be833347bff74534b8c3e5c3c574a
+created_at: '2026-03-30T12:51:49.956674+00:00'
+subtasks:
+- T001
+- T002
+- T003
+phase: Phase 1 - Foundation
+assignee: ''
+agent: ''
+shell_pid: "20951"
+review_status: ''
+reviewed_by: ''
 history:
-  - timestamp: "2026-03-30T11:51:59Z"
-    lane: "planned"
-    agent: "system"
-    shell_pid: ""
-    action: "Prompt generated via /spec-kitty.tasks"
+- timestamp: '2026-03-30T11:51:59Z'
+  lane: planned
+  agent: system
+  shell_pid: ''
+  action: Prompt generated via /spec-kitty.tasks
 ---
 
 # Work Package Prompt: WP01 - Transaction Model and State Foundation
