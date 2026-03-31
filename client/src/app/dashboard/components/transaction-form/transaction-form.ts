@@ -7,7 +7,7 @@ import {
   defaultTransactionFormModel,
   TransactionFormModel,
   TransactionSchema,
-} from '../../transaction.model';
+} from './transaction.model';
 
 @Component({
   selector: 'app-transaction-form',

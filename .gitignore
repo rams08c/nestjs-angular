@@ -11,6 +11,9 @@
 .roo/
 .amazonq/
 .github/copilot/
+.worktrees/
+.worktree/
+.worktee/
 .kittify/.dashboard
 .kittify/missions/__pycache__/
 

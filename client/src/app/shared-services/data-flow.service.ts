@@ -10,7 +10,7 @@ import {
   TransactionCategory,
   TransactionFormModel,
   TransactionItem,
-} from '../dashboard/transaction.model';
+} from '../dashboard/components/transaction-form/transaction.model';
 
 @Injectable({
   providedIn: 'root',

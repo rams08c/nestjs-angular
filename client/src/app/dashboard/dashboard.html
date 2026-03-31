@@ -1,59 +1,241 @@
-<div class="flex h-screen bg-base-200 overflow-hidden">
+<div class="flex h-screen bg-base-100 overflow-hidden">
 
-  <!-- Sidebar -->
-  <aside class="hidden lg:flex flex-shrink-0" role="navigation" aria-label="Main navigation">
-    <app-sidebar-nav />
+  <!-- Left Sidebar Navigation (w-60) -->
+  <aside class="hidden lg:flex w-60 flex-col border-r border-base-300 bg-base-100">
+    <div class="p-4 border-b border-base-300">
+      <h2 class="text-lg font-bold text-base-content">FinTrack</h2>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4">
+      <ul class="menu menu-compact space-y-2" role="navigation" aria-label="Main navigation">
+        <li>
+          <a href="#" class="rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4" />
+            </svg>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="#" class="rounded-lg active">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Transactions
+          </a>
+        </li>
+        <li>
+          <a href="#" class="rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Budgets
+          </a>
+        </li>
+        <li>
+          <a href="#" class="rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            Goals
+          </a>
+        </li>
+        <li>
+          <a href="#" class="rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Reports
+          </a>
+        </li>
+        <li>
+          <a href="#" class="rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Accounts
+          </a>
+        </li>
+        <li>
+          <a href="#" class="rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
+          </a>
+        </li>
+      </ul>
+    </div>
   </aside>
 
-  <!-- Main content -->
-  <main class="flex-1 overflow-y-auto" id="main-content">
-    <!-- Header -->
-    <div class="sticky top-0 z-10 bg-base-200/80 backdrop-blur-sm border-b border-base-300 px-6 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold text-base-content">{{ text.PAGE_TITLE }}</h1>
-      <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        (click)="openAddTransaction()"
-        [disabled]="!isAuthenticated()"
-      >
-        {{ text.ADD_TRANSACTION_BTN }}
-      </button>
+  <!-- Main Content (flex-1) -->
+  <main class="flex-1 overflow-y-auto flex flex-col">
+
+    <!-- Header Row with Metrics -->
+    <div class="border-b border-base-300 bg-base-100 p-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-base-content">Transactions</h1>
+        <div class="flex gap-6">
+          <!-- Metrics -->
+          <div class="text-center">
+            <p class="text-sm text-base-content/60 mb-1">Total Balance</p>
+            <p class="text-2xl font-bold text-primary">
+              {{ summary().totalBalance | currency:'USD':'symbol':'1.2-2' }}
+            </p>
+          </div>
+          <div class="text-center">
+            <p class="text-sm text-base-content/60 mb-1">Monthly Income</p>
+            <p class="text-2xl font-bold text-success">
+              {{ summary().monthlyIncome | currency:'USD':'symbol':'1.2-2' }}
+            </p>
+          </div>
+          <div class="text-center">
+            <p class="text-sm text-base-content/60 mb-1">Monthly Expenses</p>
+            <p class="text-2xl font-bold text-error">
+              {{ summary().monthlyExpenses | currency:'USD':'symbol':'1.2-2' }}
+            </p>
+          </div>
+          <div class="text-center">
+            <p class="text-sm text-base-content/60 mb-1">Goals</p>
+            <p class="text-2xl font-bold text-info">5</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Content sections -->
-    <div class="p-6 space-y-6">
+    <!-- Content Area -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
 
-      <!-- Top: Financial overview cards -->
-      <section aria-label="Financial overview">
-        <app-financial-overview />
-      </section>
+      <!-- Summary Card -->
+      <div class="card bg-gradient-to-r from-primary to-primary-focus text-primary-content shadow-md">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="card-title text-lg font-semibold mb-2">All-Time Expenses Total</h3>
+              <p class="text-5xl font-bold mb-4">
+                {{ expensesTotal() | currency:'USD':'symbol':'1.2-2' }}
+              </p>
+              <div class="space-y-1">
+                <p class="text-sm opacity-90" *ngIf="topExpenseCategory() as topCat">
+                  <span class="font-semibold">Top Expense:</span> {{ topCat.category }}
+                </p>
+                <p class="text-sm opacity-90">
+                  <span class="font-semibold">Avg Monthly:</span> {{ averageMonthlySpending() | currency:'USD':'symbol':'1.2-2' }}
+                </p>
+              </div>
+            </div>
+            <div class="w-32 h-24 bg-white/20 rounded-lg flex items-center justify-center">
+              <span class="text-sm opacity-75">Chart Placeholder</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <!-- Middle: Spending trend -->
-      <section aria-label="Spending trend">
-        <app-spending-trend />
-      </section>
+      <!-- Filters Row -->
+      <div class="flex gap-4 items-end bg-base-100 p-4 rounded-lg border border-base-300">
+        <!-- Date Input -->
+        <div class="form-control gap-2">
+          <label class="label p-0" for="dateInput">
+            <span class="label-text text-sm font-medium">Date</span>
+          </label>
+          <input
+            id="dateInput"
+            type="date"
+            class="input input-bordered input-sm w-40"
+            #dateInput
+            aria-label="Filter by date"
+          />
+        </div>
 
-      <!-- Bottom: Transactions + Budget + Categories -->
+        <!-- Category Dropdown -->
+        <div class="form-control gap-2">
+          <label class="label p-0" for="categoryDropdown">
+            <span class="label-text text-sm font-medium">Category</span>
+          </label>
+          <select
+            id="categoryDropdown"
+            class="select select-bordered select-sm w-40"
+            [value]="categoryFilter()"
+            #categorySelect
+            (change)="onCategoryFilterChange(categorySelect.value)"
+            aria-label="Filter by category"
+          >
+            <option value="all">All Categories</option>
+            <option value="food">Food & Dining</option>
+            <option value="transport">Transport</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="utilities">Utilities</option>
+            <option value="shopping">Shopping</option>
+          </select>
+        </div>
+
+        <!-- Amount Dropdown -->
+        <div class="form-control gap-2">
+          <label class="label p-0" for="amountDropdown">
+            <span class="label-text text-sm font-medium">Amount</span>
+          </label>
+          <select
+            id="amountDropdown"
+            class="select select-bordered select-sm w-40"
+            aria-label="Filter by amount"
+          >
+            <option value="all">All Amounts</option>
+            <option value="under50">Under $50</option>
+            <option value="50to100">$50 - $100</option>
+            <option value="over100">Over $100</option>
+          </select>
+        </div>
+
+        <!-- Search Input -->
+        <div class="form-control gap-2 flex-1">
+          <label class="label p-0" for="searchBox">
+            <span class="label-text text-sm font-medium">Search</span>
+          </label>
+          <input
+            id="searchBox"
+            type="text"
+            placeholder="Search by merchant..."
+            class="input input-bordered input-sm w-full"
+            [value]="searchQuery()"
+            #searchInput
+            (input)="onSearchChange(searchInput.value)"
+            aria-label="Search transactions"
+          />
+        </div>
+
+        <!-- Add Transaction Button (Right Aligned) -->
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          (click)="openAddTransaction()"
+          [disabled]="!isAuthenticated()"
+        >
+          + Add Transaction
+        </button>
+      </div>
+
+      <!-- Error Alert -->
       @if (loadError()) {
-        <div class="alert alert-error" role="alert">
+        <div class="alert alert-error shadow-lg" role="alert">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 4v2M12 5a7 7 0 110 14 7 7 0 010-14z" />
+          </svg>
           <span>{{ loadError() }}</span>
         </div>
       }
 
-      <section class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" aria-label="Activity and insights">
-        @if (isAuthenticated()) {
-          <app-recent-transactions class="xl:col-span-1" />
-        }
-        <app-budget-progress class="xl:col-span-1" />
-        <app-top-categories class="xl:col-span-1" />
-      </section>
+      <!-- Transaction Table -->
+      @if (isAuthenticated()) {
+        <app-recent-transactions />
+      }
 
     </div>
   </main>
 
-  <!-- Right panel (lg+) -->
-  <aside class="hidden lg:flex flex-shrink-0 border-l border-base-300 bg-base-100 overflow-y-auto" aria-label="User panel">
+  <!-- Right Panel (w-72) -->
+  <aside class="hidden lg:flex w-72 flex-col border-l border-base-300 bg-base-100 overflow-y-auto p-4 space-y-4">
     <app-right-panel />
+
   </aside>
 
   <app-transaction-form />

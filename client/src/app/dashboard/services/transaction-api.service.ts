@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { APP_API_ENDPOINTS } from '../../app.constant';
-import { TransactionCategory, TransactionItem, TransactionType } from '../transaction.model';
+import { TransactionCategory, TransactionItem, TransactionType } from '../components/transaction-form/transaction.model';
 
 export interface TransactionPayload {
   amount: number;

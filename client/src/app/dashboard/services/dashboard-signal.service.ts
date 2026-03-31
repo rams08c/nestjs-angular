@@ -6,7 +6,7 @@ import {
   TransactionCategory,
   TransactionFormState,
   TransactionItem,
-} from '../transaction.model';
+} from '../components/transaction-form/transaction.model';
 
 export interface FinancialSummary {
   totalBalance: number;

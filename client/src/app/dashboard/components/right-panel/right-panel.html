@@ -1,16 +1,16 @@
-<aside class="flex flex-col gap-4 p-4 w-72">
+<div class="flex flex-col gap-4">
   <!-- User info -->
   @if (currentUser()) {
-    <div class="card bg-base-100 border border-base-300 shadow-sm">
+    <div class="card bg-base-200 shadow-sm">
       <div class="card-body p-4">
         <div class="flex items-center gap-3">
           <div class="avatar placeholder">
-            <div class="bg-primary text-primary-content rounded-full w-10">
+            <div class="w-12 h-12 bg-primary text-primary-content rounded-full flex items-center justify-center">
               <span class="text-lg font-bold">{{ currentUser()!.name.charAt(0).toUpperCase() }}</span>
             </div>
           </div>
           <div>
-            <p class="font-semibold text-base-content text-sm">{{ currentUser()!.name }}</p>
+            <p class="font-semibold text-base-content">{{ currentUser()!.name }}</p>
             <p class="text-xs text-base-content/60">{{ currentUser()!.email }}</p>
           </div>
         </div>
@@ -19,11 +19,44 @@
   }
 
   <!-- Upgrade card -->
-  <div class="card bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
+  <div class="card bg-gradient-to-b from-primary/20 to-primary/10 border border-primary/30 shadow-sm">
     <div class="card-body p-4">
-      <h3 class="font-bold text-base-content text-sm">{{ text.USER_UPGRADE_TITLE }}</h3>
-      <p class="text-xs text-base-content/70 mt-1">{{ text.USER_UPGRADE_DESC }}</p>
-      <button class="btn btn-primary btn-sm mt-3" type="button">{{ text.USER_UPGRADE_BTN }}</button>
+      <h3 class="card-title text-base font-semibold mb-2">{{ text.USER_UPGRADE_TITLE }}</h3>
+      <p class="text-xs mb-4 text-base-content/70">{{ text.USER_UPGRADE_DESC }}</p>
+      <button class="btn btn-primary btn-sm w-full" type="button">{{ text.USER_UPGRADE_BTN }}</button>
     </div>
   </div>
-</aside>
+
+  <!-- Spending Trend -->
+  <div class="card bg-base-200 shadow-sm">
+    <div class="card-body p-4">
+      <h3 class="card-title text-base font-semibold mb-3">Spending Trend</h3>
+      <div class="w-full h-32 bg-base-300 rounded-lg flex items-center justify-center mb-2">
+        <span class="text-xs opacity-50">Bar Chart</span>
+      </div>
+      <p class="text-xs text-base-content/60">{{ text.SPENDING_TREND_SUBTITLE }}</p>
+    </div>
+  </div>
+
+  <!-- Budget Progress -->
+  <div class="card bg-base-200 shadow-sm">
+    <div class="card-body p-4">
+      <h3 class="card-title text-base font-semibold mb-3">{{ text.BUDGET_PROGRESS_TITLE }}</h3>
+      <div class="space-y-4">
+        @for (budget of budgetProgress(); track budget.category) {
+          <div>
+            <div class="flex justify-between mb-1">
+              <p class="text-xs font-semibold text-base-content">{{ budget.category }}</p>
+              <p class="text-xs text-base-content/60">{{ budget.spent }}/{{ budget.allocated }}</p>
+            </div>
+            <progress 
+              class="progress w-full h-2" 
+              [value]="budget.spent" 
+              [max]="budget.allocated"
+            ></progress>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,19 +1,81 @@
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-  <!-- Total Balance -->
-  <div class="stat bg-base-100 border border-base-300 rounded-xl shadow-sm">
-    <div class="stat-title text-base-content/60">{{ text.TOTAL_BALANCE_LABEL }}</div>
-    <div class="stat-value text-primary text-2xl">{{ summary().totalBalance | currency:'USD':'symbol':'1.2-2' }}</div>
-  </div>
+<div class="card bg-gradient-to-br from-primary to-primary-focus text-primary-content shadow-lg border-0">
+  <div class="card-body p-8">
+    <!-- Hero Section Header -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <!-- Left: Main Stats -->
+      <div class="flex flex-col justify-center">
+        <!-- Total Expenses Title -->
+        <p class="text-sm font-semibold opacity-80 mb-2">{{ text.MONTHLY_EXPENSES_LABEL }}</p>
+        
+        <!-- Large Total Amount -->
+        <h2 class="text-5xl font-bold mb-6 tracking-tight">
+          {{ summary().monthlyExpenses | currency:'USD':'symbol':'1.2-2' }}
+        </h2>
 
-  <!-- Monthly Income -->
-  <div class="stat bg-base-100 border border-base-300 rounded-xl shadow-sm">
-    <div class="stat-title text-base-content/60">{{ text.MONTHLY_INCOME_LABEL }}</div>
-    <div class="stat-value text-success text-2xl">{{ summary().monthlyIncome | currency:'USD':'symbol':'1.2-2' }}</div>
-  </div>
+        <!-- Secondary Details Row -->
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Total Balance Card -->
+          <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+            <p class="text-xs font-semibold opacity-75 mb-1">{{ text.TOTAL_BALANCE_LABEL }}</p>
+            <p class="text-2xl font-bold">{{ summary().totalBalance | currency:'USD':'symbol':'1.2-2' }}</p>
+          </div>
 
-  <!-- Monthly Expenses -->
-  <div class="stat bg-base-100 border border-base-300 rounded-xl shadow-sm">
-    <div class="stat-title text-base-content/60">{{ text.MONTHLY_EXPENSES_LABEL }}</div>
-    <div class="stat-value text-error text-2xl">{{ summary().monthlyExpenses | currency:'USD':'symbol':'1.2-2' }}</div>
+          <!-- Monthly Income Card -->
+          <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+            <p class="text-xs font-semibold opacity-75 mb-1">{{ text.MONTHLY_INCOME_LABEL }}</p>
+            <p class="text-2xl font-bold">{{ summary().monthlyIncome | currency:'USD':'symbol':'1.2-2' }}</p>
+          </div>
+
+          <!-- Top Category Card -->
+          @if (topExpenseCategory()) {
+            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+              <p class="text-xs font-semibold opacity-75 mb-1">Top Expense</p>
+              <p class="text-2xl font-bold">{{ topExpenseCategory()!.category }}</p>
+            </div>
+          }
+
+          <!-- Average Monthly Spending -->
+          <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+            <p class="text-xs font-semibold opacity-75 mb-1">Daily Average</p>
+            <p class="text-2xl font-bold">{{ (averageMonthlySpending() | currency:'USD':'symbol':'1.2-2') }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Sparkline Chart -->
+      <div class="flex flex-col items-center justify-center">
+        <p class="text-sm font-semibold opacity-80 mb-4 w-full text-center">{{ text.SPENDING_TREND_SUBTITLE }}</p>
+        <svg 
+          viewBox="0 0 100 40" 
+          class="w-full h-32 max-w-sm" 
+          preserveAspectRatio="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="Spending trend sparkline for last 30 days"
+        >
+          <!-- Grid lines (optional, subtle) -->
+          <line x1="0" y1="10" x2="100" y2="10" stroke="currentColor" stroke-width="0.3" opacity="0.2" />
+          <line x1="0" y1="20" x2="100" y2="20" stroke="currentColor" stroke-width="0.3" opacity="0.2" />
+          <line x1="0" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="0.3" opacity="0.2" />
+          
+          <!-- Main sparkline path -->
+          <path 
+            [attr.d]="generateSparklinePathData()" 
+            stroke="currentColor" 
+            stroke-width="1.5" 
+            fill="none" 
+            stroke-linecap="round" 
+            stroke-linejoin="round"
+          />
+          
+          <!-- Filled area under curve -->
+          <path 
+            [attr.d]="generateSparklinePathData() + ' L 100 40 L 0 40 Z'" 
+            fill="currentColor" 
+            opacity="0.1"
+          />
+        </svg>
+        <p class="text-xs opacity-75 mt-2 text-center">30-day expense trend</p>
+      </div>
+    </div>
   </div>
 </div>
