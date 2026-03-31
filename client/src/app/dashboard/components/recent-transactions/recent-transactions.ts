@@ -9,6 +9,9 @@ import { DataFlowService } from '../../../shared-services/data-flow.service';
   imports: [CurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './recent-transactions.html',
+  host: {
+    class: 'block',
+  },
 })
 export class RecentTransactions {
   private svc = inject(DashboardSignalService);

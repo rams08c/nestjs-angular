@@ -1,16 +1,16 @@
 <div class="card h-full rounded-xl border border-base-300 bg-base-100 shadow-sm">
   <div class="card-body h-full gap-4 p-5">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div class="min-w-0">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="min-w-0 flex-1">
         <h3 class="card-title text-lg">{{ text.GOALS_TITLE }}</h3>
         <p class="text-sm text-base-content/65">{{ text.GOALS_SUBTITLE }}</p>
       </div>
-      <div class="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-        <div class="text-left sm:text-right">
+      <div class="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end">
+        <div class="min-w-0 text-left sm:text-right">
           <p class="text-xs uppercase tracking-[0.16em] text-base-content/50">Saved</p>
           <p class="text-lg font-semibold text-info">{{ totalSaved() | currency:'USD':'symbol':'1.0-0' }}</p>
         </div>
-        <button type="button" class="btn btn-primary btn-sm w-full sm:w-auto" (click)="openAddGoal()">
+        <button type="button" class="btn btn-primary btn-sm w-full shrink-0 sm:w-auto" (click)="openAddGoal()">
           {{ text.GOAL_ADD_BUTTON }}
         </button>
       </div>

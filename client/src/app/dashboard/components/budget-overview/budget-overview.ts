@@ -9,6 +9,9 @@ import { DataFlowService } from '../../../shared-services/data-flow.service';
   imports: [CommonModule, CurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './budget-overview.html',
+  host: {
+    class: 'block h-full',
+  },
 })
 export class BudgetOverview {
   private dataFlowService = inject(DataFlowService);
