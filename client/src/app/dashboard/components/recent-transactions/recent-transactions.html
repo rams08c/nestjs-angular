@@ -78,7 +78,7 @@
                       class="text-sm font-semibold"
                       [class]="tx.type === 'expense' ? 'text-error' : 'text-success'"
                     >
-                      {{ (tx.type === 'expense' ? '-' : '+') }}{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
+                      {{ (tx.type === 'expense' ? '-' : '+') }}{{ tx.amount | currency:currencyCode():'symbol':'1.2-2' }}
                     </span>
                   </td>
 

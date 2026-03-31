@@ -31,4 +31,7 @@ export class UpdateTransactionDto {
 	@IsOptional()
 	@IsString()
 	groupId?: string;
+  @IsOptional()
+  @IsString()
+  accountId?: string;
 }

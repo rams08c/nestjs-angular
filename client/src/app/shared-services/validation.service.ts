@@ -233,6 +233,34 @@ export class ValidationService {
     return errors.every((error) => error.isValid);
   }
 
+  validateAccountName(name: string): ValidationResult {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return { field: 'name', isValid: false, message: APP_ERROR_MESSAGES.ACCOUNT.NAME_REQUIRED };
+    if (trimmed.length > 100) return { field: 'name', isValid: false, message: APP_ERROR_MESSAGES.ACCOUNT.NAME_MAX };
+    return { field: 'name', isValid: true };
+  }
+
+  validateAccountType(type: string): ValidationResult {
+    if (!type) return { field: 'type', isValid: false, message: APP_ERROR_MESSAGES.ACCOUNT.TYPE_REQUIRED };
+    if (!['cash', 'bank', 'card'].includes(type)) return { field: 'type', isValid: false, message: APP_ERROR_MESSAGES.ACCOUNT.TYPE_INVALID };
+    return { field: 'type', isValid: true };
+  }
+
+  validateAccountBalance(balance: string): ValidationResult {
+    const trimmed = (balance || '').trim();
+    if (!trimmed) return { field: 'balance', isValid: false, message: APP_ERROR_MESSAGES.ACCOUNT.BALANCE_REQUIRED };
+    if (!Number.isFinite(Number(trimmed))) return { field: 'balance', isValid: false, message: APP_ERROR_MESSAGES.ACCOUNT.BALANCE_VALID };
+    return { field: 'balance', isValid: true };
+  }
+
+  validateAccountForm(data: { name: string; type: string; balance: string }): ValidationResult[] {
+    return [
+      this.validateAccountName(data.name),
+      this.validateAccountType(data.type),
+      this.validateAccountBalance(data.balance),
+    ];
+  }
+
   checkEmailAvailability(schemaPath: any) {
     validateHttp(schemaPath.email, {
       request: ({ value }) => `${APP_API_ENDPOINTS.AUTH.CHECK_EMAIL}?email=${value()}`,

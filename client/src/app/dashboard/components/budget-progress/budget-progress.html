@@ -6,7 +6,7 @@
         <li>
           <div class="flex justify-between text-sm mb-1">
             <span class="text-base-content">{{ cat.category }}</span>
-            <span class="text-base-content/60">${{ cat.spent }} / ${{ cat.allocated }}</span>
+            <span class="text-base-content/60">{{ currencySymbol() }}{{ cat.spent }} / {{ currencySymbol() }}{{ cat.allocated }}</span>
           </div>
           <progress
             class="progress w-full"

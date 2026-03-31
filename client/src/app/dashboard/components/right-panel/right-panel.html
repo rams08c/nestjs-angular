@@ -55,7 +55,7 @@
               [max]="budget.limitAmount"
             ></progress>
             <p class="mt-1 text-[11px] text-base-content/55">
-              {{ budget.usedAmount | currency:'USD':'symbol':'1.0-0' }} of {{ budget.limitAmount | currency:'USD':'symbol':'1.0-0' }}
+              {{ budget.usedAmount | currency:currencyCode():'symbol':'1.0-0' }} of {{ budget.limitAmount | currency:currencyCode():'symbol':'1.0-0' }}
             </p>
           </div>
         }
@@ -78,7 +78,7 @@
             </div>
             <progress class="progress progress-primary mt-2 h-2 w-full" [value]="goal.savedAmount" [max]="goal.targetAmount"></progress>
             <div class="mt-2 flex items-center justify-between text-[11px] text-base-content/55">
-              <span>{{ goal.savedAmount | currency:'USD':'symbol':'1.0-0' }}</span>
+              <span>{{ goal.savedAmount | currency:currencyCode():'symbol':'1.0-0' }}</span>
               <span>{{ goal.targetDate | date:'MMM d' }}</span>
             </div>
           </div>

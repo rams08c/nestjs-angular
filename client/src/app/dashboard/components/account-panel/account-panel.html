@@ -1,0 +1,166 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-base-content">{{ text.ACCOUNTS_TITLE }}</h2>
+      <p class="text-sm text-base-content/60 mt-1">{{ text.ACCOUNTS_SUBTITLE }}</p>
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="openAdd()" type="button">
+      {{ text.ACCOUNT_ADD_BUTTON }}
+    </button>
+  </div>
+
+  <!-- Delete error -->
+  @if (deleteError()) {
+    <div role="alert" class="alert alert-error text-sm">{{ deleteError() }}</div>
+  }
+
+  <!-- Account list -->
+  @if (accounts().length === 0) {
+    <div class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-base-300 bg-base-200/40 p-4 text-center text-sm text-base-content/65">
+      {{ text.ACCOUNT_EMPTY }}
+    </div>
+  } @else {
+    <ul class="space-y-3" aria-label="Accounts list">
+      @for (account of accounts(); track account.id) {
+        <li class="card border border-base-300 bg-base-100 shadow-sm">
+          <div class="card-body p-4 flex flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="badge badge-outline capitalize">{{ account.type }}</span>
+              <span class="font-medium text-base-content truncate">{{ account.name }}</span>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="font-semibold text-base-content">
+                {{ currencySymbol() }}{{ account.balance | number: '1.2-2' }}
+              </span>
+              <button
+                class="btn btn-ghost btn-xs"
+                type="button"
+                [attr.aria-label]="'Edit ' + account.name"
+                (click)="openEdit(account)">
+                {{ text.ACCOUNT_EDIT }}
+              </button>
+              <button
+                class="btn btn-ghost btn-xs text-error"
+                type="button"
+                [attr.aria-label]="'Delete ' + account.name"
+                [disabled]="deletingId() === account.id"
+                (click)="onDelete(account.id)">
+                {{ text.ACCOUNT_DELETE }}
+              </button>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>
+
+<!-- Drawer -->
+@if (formState().isOpen) {
+  <div
+    class="fixed inset-0 z-40 bg-black/40"
+    role="presentation"
+    (click)="close()"
+    (keydown.escape)="close()">
+  </div>
+
+  <aside
+    class="fixed right-0 top-0 z-50 h-full w-full max-w-sm bg-base-100 shadow-2xl flex flex-col"
+    role="dialog"
+    [attr.aria-label]="title()"
+    aria-modal="true">
+    <div class="flex items-center justify-between border-b border-base-300 p-4">
+      <h3 class="text-lg font-bold text-base-content">{{ title() }}</h3>
+      <button class="btn btn-ghost btn-sm btn-circle" type="button" aria-label="Close" (click)="close()">
+        ✕
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4">
+      <!-- Submit error -->
+      @if (formState().submitError) {
+        <div role="alert" class="alert alert-error mb-4 text-sm">{{ formState().submitError }}</div>
+      }
+
+      <form class="space-y-4" [formRoot]="accountForm">
+        <!-- Name -->
+        <div class="flex flex-col gap-1">
+          <label for="acc-name" class="text-sm font-medium text-base-content/80">
+            {{ text.ACCOUNT_NAME_LABEL }}
+          </label>
+          <input
+            id="acc-name"
+            type="text"
+            [formField]="accountForm.name"
+            [placeholder]="text.ACCOUNT_NAME_PLACEHOLDER"
+            class="input input-bordered w-full"
+            [class.input-error]="accountForm.name().invalid() && accountForm.name().touched()" />
+          @if (accountForm.name().invalid() && accountForm.name().touched()) {
+            @for (error of accountForm.name().errors(); track error) {
+              <p class="text-xs text-error mt-1">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <!-- Type -->
+        <div class="flex flex-col gap-1">
+          <label for="acc-type" class="text-sm font-medium text-base-content/80">
+            {{ text.ACCOUNT_TYPE_LABEL }}
+          </label>
+          <select
+            id="acc-type"
+            [formField]="accountForm.type"
+            class="select select-bordered w-full"
+            [class.select-error]="accountForm.type().invalid() && accountForm.type().touched()">
+            <option value="" disabled>Select type</option>
+            @for (t of accountTypes; track t.value) {
+              <option [value]="t.value">{{ t.label }}</option>
+            }
+          </select>
+          @if (accountForm.type().invalid() && accountForm.type().touched()) {
+            @for (error of accountForm.type().errors(); track error) {
+              <p class="text-xs text-error mt-1">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <!-- Balance -->
+        <div class="flex flex-col gap-1">
+          <label for="acc-balance" class="text-sm font-medium text-base-content/80">
+            {{ text.ACCOUNT_BALANCE_LABEL }}
+          </label>
+          <input
+            id="acc-balance"
+            type="number"
+            step="0.01"
+            [formField]="accountForm.balance"
+            [placeholder]="text.ACCOUNT_BALANCE_PLACEHOLDER"
+            class="input input-bordered w-full"
+            [class.input-error]="accountForm.balance().invalid() && accountForm.balance().touched()" />
+          @if (accountForm.balance().invalid() && accountForm.balance().touched()) {
+            @for (error of accountForm.balance().errors(); track error) {
+              <p class="text-xs text-error mt-1">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button
+            type="submit"
+            class="btn btn-primary flex-1"
+            [disabled]="accountForm().invalid() || formState().isSubmitting">
+            @if (formState().isSubmitting) {
+              {{ text.ACCOUNT_SAVING }}
+            } @else {
+              {{ text.ACCOUNT_SAVE }}
+            }
+          </button>
+          <button type="button" class="btn btn-ghost" (click)="close()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </aside>
+}

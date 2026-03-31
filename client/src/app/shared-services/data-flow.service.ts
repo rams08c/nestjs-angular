@@ -23,6 +23,20 @@ import {
   TransactionFormModel,
   TransactionItem,
 } from '../dashboard/components/transaction-form/transaction.model';
+import {
+  AccountFormModel,
+  AccountItem,
+  defaultAccountFormModel,
+  defaultAccountFormState,
+} from '../account-settings/account.model';
+import {
+  defaultSettingsFormModel,
+  defaultSettingsFormState,
+  SettingsFormModel,
+} from '../account-settings/settings.model';
+import { AccountApiService } from '../account-settings/services/account-api.service';
+import { SettingsApiService } from '../account-settings/services/settings-api.service';
+import { CurrencyInfo, DEFAULT_CURRENCY, getCurrencyForCountry } from '../app.countries';
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +47,8 @@ export class DataFlowService {
   private transactionApiService = inject(TransactionApiService);
   private budgetApiService = inject(BudgetApiService);
   private goalApiService = inject(GoalApiService);
+  private accountApiService = inject(AccountApiService);
+  private settingsApiService = inject(SettingsApiService);
 
   get isLoggedIn() {
     return this.signalService.isLoggedIn;
@@ -86,6 +102,29 @@ export class DataFlowService {
     return this.dashboardSignalService.goalFormState;
   }
 
+  get accounts() {
+    return this.signalService.accounts;
+  }
+
+  get accountFormState() {
+    return this.dashboardSignalService.accountFormState;
+  }
+
+  get settingsFormState() {
+    return this.dashboardSignalService.settingsFormState;
+  }
+
+  get settings() {
+    return this.signalService.settings;
+  }
+
+  readonly currency = computed<CurrencyInfo>(() => {
+    const country = this.signalService.settings()?.country ?? '';
+    return country ? getCurrencyForCountry(country) : DEFAULT_CURRENCY;
+  });
+
+  readonly currencyCode = computed(() => this.currency().code);
+  readonly currencySymbol = computed(() => this.currency().symbol);
   readonly transactionsForCurrentUser = computed(() => {
     if (!this.isAuthenticated()) {
       return [];
@@ -532,5 +571,111 @@ export class DataFlowService {
       ...state,
       submitError: message,
     }));
+  }
+
+  // ---------- Accounts ----------
+
+  loadAccounts(): void {
+    this.accountApiService.getAccounts().subscribe({
+      next: (accounts) => this.signalService.accounts.set(accounts),
+    });
+  }
+
+  openAddAccountDrawer(): void {
+    this.dashboardSignalService.accountFormState.set({
+      ...defaultAccountFormState,
+      mode: 'add',
+      isOpen: true,
+      values: { ...defaultAccountFormModel },
+    });
+  }
+
+  openEditAccountDrawer(account: AccountItem): void {
+    this.dashboardSignalService.accountFormState.set({
+      mode: 'edit',
+      isOpen: true,
+      isSubmitting: false,
+      submitError: null,
+      editingId: account.id,
+      values: { name: account.name, type: account.type, balance: String(account.balance) },
+    });
+  }
+
+  closeAccountDrawer(): void {
+    this.dashboardSignalService.accountFormState.update((s) => ({ ...s, isOpen: false }));
+  }
+
+  setAccountSubmitting(isSubmitting: boolean): void {
+    this.dashboardSignalService.accountFormState.update((s) => ({ ...s, isSubmitting }));
+  }
+
+  setAccountSubmitError(message: string | null): void {
+    this.dashboardSignalService.accountFormState.update((s) => ({ ...s, submitError: message }));
+  }
+
+  createAccount(values: AccountFormModel): Observable<AccountItem> {
+    return this.accountApiService
+      .createAccount({ name: values.name, type: values.type, balance: Number(values.balance) })
+      .pipe(tap((account) => this.signalService.accounts.update((list) => [...list, account])));
+  }
+
+  updateAccount(values: AccountFormModel): Observable<AccountItem> {
+    const id = this.dashboardSignalService.accountFormState().editingId!;
+    return this.accountApiService
+      .updateAccount(id, { name: values.name, type: values.type, balance: Number(values.balance) })
+      .pipe(
+        tap((updated) =>
+          this.signalService.accounts.update((list) =>
+            list.map((a) => (a.id === id ? updated : a)),
+          ),
+        ),
+      );
+  }
+
+  deleteAccount(id: string): Observable<void> {
+    return this.accountApiService
+      .deleteAccount(id)
+      .pipe(
+        tap(() =>
+          this.signalService.accounts.update((list) => list.filter((a) => a.id !== id)),
+        ),
+      );
+  }
+
+  // ---------- Settings ----------
+
+  loadSettings(): void {
+    this.settingsApiService.getSettings().subscribe({
+      next: (res) =>
+        this.signalService.settings.set({
+          firstName: res.firstName ?? '',
+          lastName: res.lastName ?? '',
+          location: res.location ?? '',
+          address: res.address ?? '',
+          country: res.country ?? '',
+        }),
+    });
+  }
+
+  saveSettings(values: SettingsFormModel): Observable<unknown> {
+    return this.settingsApiService.updateSettings(values).pipe(
+      tap((res) =>
+        this.signalService.settings.set({
+          firstName: res.firstName ?? '',
+          lastName: res.lastName ?? '',
+          location: res.location ?? '',
+          address: res.address ?? '',
+          country: res.country ?? '',
+        }),
+      ),
+    );
+  }
+
+  setSettingsSubmitting(isSubmitting: boolean): void {
+    this.dashboardSignalService.settingsFormState.update((s) => ({ ...s, isSubmitting }));
+  }
+
+  setSettingsSubmitError(message: string | null): void {
+    this.dashboardSignalService.settingsFormState.update((s) => ({ ...s, submitError: message }));
   }
 }

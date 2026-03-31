@@ -30,4 +30,14 @@ export const APP_ERROR_MESSAGES = {
     GOAL_ACCESS_FORBIDDEN: 'Goal access is forbidden',
     GOAL_SAVED_EXCEEDS_TARGET: 'Saved amount cannot exceed target amount',
   },
+  ACCOUNTS: {
+    ACCOUNT_NOT_FOUND: 'Account not found',
+    ACCOUNT_ACCESS_FORBIDDEN: 'Account access is forbidden',
+    ACCOUNT_NAME_CONFLICT: 'An account with this name already exists',
+    ACCOUNT_HAS_TRANSACTIONS: 'Account cannot be deleted while transactions reference it',
+  },
+  SETTINGS: {
+    SETTINGS_NOT_FOUND: 'Settings not found',
+    SETTINGS_ACCESS_FORBIDDEN: 'Settings access is forbidden',
+  },
 } as const;

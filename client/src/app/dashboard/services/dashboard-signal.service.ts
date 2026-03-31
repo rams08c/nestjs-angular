@@ -16,6 +16,8 @@ import {
   TransactionFormState,
   TransactionItem,
 } from '../components/transaction-form/transaction.model';
+import { AccountFormModel, defaultAccountFormState } from '../../account-settings/account.model';
+import { defaultSettingsFormState, SettingsFormModel } from '../../account-settings/settings.model';
 
 export interface FinancialSummary {
   totalBalance: number;
@@ -63,6 +65,8 @@ export class DashboardSignalService {
   readonly deleteState = signal<DeleteConfirmState>({ ...defaultDeleteConfirmState });
   readonly budgetFormState = signal<EntityFormState<BudgetFormModel>>({ ...defaultBudgetFormState });
   readonly goalFormState = signal<EntityFormState<GoalFormModel>>({ ...defaultGoalFormState });
+  readonly accountFormState = signal<EntityFormState<AccountFormModel>>({ ...defaultAccountFormState });
+  readonly settingsFormState = signal<EntityFormState<SettingsFormModel>>({ ...defaultSettingsFormState });
 
   readonly budgetProgress = signal<BudgetCategory[]>([
     { category: 'Food & Dining', allocated: 500, spent: 320 },
@@ -142,6 +146,14 @@ export class DashboardSignalService {
 
   setGoalFormState(state: EntityFormState<GoalFormModel>): void {
     this.goalFormState.set(state);
+  }
+
+  setAccountFormState(state: EntityFormState<AccountFormModel>): void {
+    this.accountFormState.set(state);
+  }
+
+  setSettingsFormState(state: EntityFormState<SettingsFormModel>): void {
+    this.settingsFormState.set(state);
   }
 
   addTransaction(transaction: TransactionItem): void {

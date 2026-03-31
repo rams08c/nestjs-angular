@@ -31,4 +31,8 @@ export class CreateTransactionDto {
   @IsOptional()
   @IsString()
   groupId?: string;
+
+  @IsOptional()
+  @IsString()
+  accountId?: string;
 }

@@ -9,7 +9,7 @@
         
         <!-- Large Total Amount -->
         <h2 class="text-5xl font-bold mb-6 tracking-tight">
-          {{ summary().monthlyExpenses | currency:'USD':'symbol':'1.2-2' }}
+          {{ summary().monthlyExpenses | currency:currencyCode():'symbol':'1.2-2' }}
         </h2>
 
         <!-- Secondary Details Row -->
@@ -17,13 +17,13 @@
           <!-- Total Balance Card -->
           <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
             <p class="text-xs font-semibold opacity-75 mb-1">{{ text.TOTAL_BALANCE_LABEL }}</p>
-            <p class="text-2xl font-bold">{{ summary().totalBalance | currency:'USD':'symbol':'1.2-2' }}</p>
+            <p class="text-2xl font-bold">{{ summary().totalBalance | currency:currencyCode():'symbol':'1.2-2' }}</p>
           </div>
 
           <!-- Monthly Income Card -->
           <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
             <p class="text-xs font-semibold opacity-75 mb-1">{{ text.MONTHLY_INCOME_LABEL }}</p>
-            <p class="text-2xl font-bold">{{ summary().monthlyIncome | currency:'USD':'symbol':'1.2-2' }}</p>
+            <p class="text-2xl font-bold">{{ summary().monthlyIncome | currency:currencyCode():'symbol':'1.2-2' }}</p>
           </div>
 
           <!-- Top Category Card -->
@@ -37,7 +37,7 @@
           <!-- Average Monthly Spending -->
           <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
             <p class="text-xs font-semibold opacity-75 mb-1">Daily Average</p>
-            <p class="text-2xl font-bold">{{ (averageMonthlySpending() | currency:'USD':'symbol':'1.2-2') }}</p>
+            <p class="text-2xl font-bold">{{ (averageMonthlySpending() | currency:currencyCode():'symbol':'1.2-2') }}</p>
           </div>
         </div>
       </div>

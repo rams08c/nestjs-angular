@@ -88,3 +88,21 @@ export const GoalErrors = {
   GOAL_SAVED_EXCEEDS_TARGET: () =>
     getErrorMessage('GOALS', 'GOAL_SAVED_EXCEEDS_TARGET' as const),
 };
+
+export const AccountErrors = {
+  ACCOUNT_NOT_FOUND: () =>
+    getErrorMessage('ACCOUNTS', 'ACCOUNT_NOT_FOUND' as const),
+  ACCOUNT_ACCESS_FORBIDDEN: () =>
+    getErrorMessage('ACCOUNTS', 'ACCOUNT_ACCESS_FORBIDDEN' as const),
+  ACCOUNT_NAME_CONFLICT: () =>
+    getErrorMessage('ACCOUNTS', 'ACCOUNT_NAME_CONFLICT' as const),
+  ACCOUNT_HAS_TRANSACTIONS: () =>
+    getErrorMessage('ACCOUNTS', 'ACCOUNT_HAS_TRANSACTIONS' as const),
+};
+
+export const SettingsErrors = {
+  SETTINGS_NOT_FOUND: () =>
+    getErrorMessage('SETTINGS', 'SETTINGS_NOT_FOUND' as const),
+  SETTINGS_ACCESS_FORBIDDEN: () =>
+    getErrorMessage('SETTINGS', 'SETTINGS_ACCESS_FORBIDDEN' as const),
+};

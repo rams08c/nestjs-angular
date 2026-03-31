@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { DashboardSignalService } from '../../services/dashboard-signal.service';
+import { DataFlowService } from '../../../shared-services/data-flow.service';
 import { APP_TEXT } from '../../../app.constant';
 
 @Component({
@@ -11,10 +12,12 @@ import { APP_TEXT } from '../../../app.constant';
 })
 export class FinancialOverview {
   private svc = inject(DashboardSignalService);
+  private dataFlowService = inject(DataFlowService);
   readonly text = APP_TEXT.DASHBOARD;
   readonly summary = this.svc.summary;
   readonly topCategories = this.svc.topCategories;
   readonly spendingTrend = this.svc.spendingTrend;
+  readonly currencyCode = this.dataFlowService.currencyCode;
 
   readonly topExpenseCategory = computed(() => {
     const categories = this.topCategories();

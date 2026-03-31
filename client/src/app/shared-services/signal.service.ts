@@ -1,4 +1,6 @@
 import { Injectable, signal } from '@angular/core';
+import { AccountItem } from '../account-settings/account.model';
+import { SettingsFormModel } from '../account-settings/settings.model';
 
 export interface User {
   id: string;
@@ -13,6 +15,8 @@ export class SignalService {
   readonly isLoggedIn = signal(this.getInitialLoggedInState());
   readonly currentUser = signal<User | null>(this.getInitialUser());
   readonly authToken = signal<string | null>(this.getInitialToken());
+  readonly accounts = signal<AccountItem[]>([]);
+  readonly settings = signal<SettingsFormModel | null>(null);
 
   constructor() {
     this.initializeFromSessionStorage();

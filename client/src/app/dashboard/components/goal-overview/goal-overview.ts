@@ -20,6 +20,7 @@ export class GoalOverview {
   readonly goals = this.dataFlowService.goalsForCurrentUser;
   readonly loadingGoals = this.dataFlowService.loadingGoals;
   readonly deleteError = signal<string | null>(null);
+  readonly currencyCode = this.dataFlowService.currencyCode;
   readonly totalSaved = computed(() => this.goals().reduce((sum, goal) => sum + goal.savedAmount, 0));
 
   openAddGoal(): void {

@@ -1,0 +1,205 @@
+<div class="space-y-6 max-w-lg">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-base-content">{{ text.SETTINGS_TITLE }}</h2>
+      <p class="text-sm text-base-content/60 mt-1">{{ text.SETTINGS_SUBTITLE }}</p>
+    </div>
+    @if (!isEditing()) {
+      <button
+        type="button"
+        class="btn btn-outline btn-sm"
+        (click)="startEdit()"
+        aria-label="Edit profile">
+        {{ text.SETTINGS_EDIT }}
+      </button>
+    }
+  </div>
+
+  <!-- Success banner -->
+  @if (saveSuccess()) {
+    <div role="status" class="alert alert-success text-sm">{{ text.SETTINGS_SAVED }}</div>
+  }
+
+  <!-- Error banner -->
+  @if (formState().submitError) {
+    <div role="alert" class="alert alert-error text-sm">{{ formState().submitError }}</div>
+  }
+
+  <!-- ── Read-only view ── -->
+  @if (!isEditing()) {
+    @if (hasProfile) {
+      <dl class="space-y-4">
+        <div class="flex flex-col gap-0.5">
+          <dt class="text-xs font-medium text-base-content/50 uppercase tracking-wide">
+            {{ text.SETTINGS_FIRST_NAME_LABEL }}
+          </dt>
+          <dd class="text-base text-base-content">
+            {{ settingsModel().firstName || '—' }}
+          </dd>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <dt class="text-xs font-medium text-base-content/50 uppercase tracking-wide">
+            {{ text.SETTINGS_LAST_NAME_LABEL }}
+          </dt>
+          <dd class="text-base text-base-content">
+            {{ settingsModel().lastName || '—' }}
+          </dd>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <dt class="text-xs font-medium text-base-content/50 uppercase tracking-wide">
+            {{ text.SETTINGS_LOCATION_LABEL }}
+          </dt>
+          <dd class="text-base text-base-content">
+            {{ settingsModel().location || '—' }}
+          </dd>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <dt class="text-xs font-medium text-base-content/50 uppercase tracking-wide">
+            {{ text.SETTINGS_ADDRESS_LABEL }}
+          </dt>
+          <dd class="text-base text-base-content">
+            {{ settingsModel().address || '—' }}
+          </dd>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <dt class="text-xs font-medium text-base-content/50 uppercase tracking-wide">
+            {{ text.SETTINGS_COUNTRY_LABEL }}
+          </dt>
+          <dd class="text-base text-base-content">
+            {{ settingsModel().country ? countryName(settingsModel().country) : '—' }}
+          </dd>
+        </div>
+      </dl>
+    } @else {
+      <p class="text-sm text-base-content/50 italic">
+        No profile information yet. Click <strong>Edit Profile</strong> to get started.
+      </p>
+    }
+  }
+
+  <!-- ── Edit form ── -->
+  @if (isEditing()) {
+    <form class="space-y-4" [formRoot]="settingsForm">
+      <!-- First Name -->
+      <div class="flex flex-col gap-1">
+        <label for="s-firstName" class="text-sm font-medium text-base-content/80">
+          {{ text.SETTINGS_FIRST_NAME_LABEL }}
+        </label>
+        <input
+          id="s-firstName"
+          type="text"
+          [formField]="settingsForm.firstName"
+          [placeholder]="text.SETTINGS_FIRST_NAME_PLACEHOLDER"
+          class="input input-bordered w-full"
+          [class.input-error]="settingsForm.firstName().invalid() && settingsForm.firstName().touched()" />
+        @if (settingsForm.firstName().invalid() && settingsForm.firstName().touched()) {
+          @for (error of settingsForm.firstName().errors(); track error) {
+            <p class="text-xs text-error mt-1">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Last Name -->
+      <div class="flex flex-col gap-1">
+        <label for="s-lastName" class="text-sm font-medium text-base-content/80">
+          {{ text.SETTINGS_LAST_NAME_LABEL }}
+        </label>
+        <input
+          id="s-lastName"
+          type="text"
+          [formField]="settingsForm.lastName"
+          [placeholder]="text.SETTINGS_LAST_NAME_PLACEHOLDER"
+          class="input input-bordered w-full"
+          [class.input-error]="settingsForm.lastName().invalid() && settingsForm.lastName().touched()" />
+        @if (settingsForm.lastName().invalid() && settingsForm.lastName().touched()) {
+          @for (error of settingsForm.lastName().errors(); track error) {
+            <p class="text-xs text-error mt-1">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Location -->
+      <div class="flex flex-col gap-1">
+        <label for="s-location" class="text-sm font-medium text-base-content/80">
+          {{ text.SETTINGS_LOCATION_LABEL }}
+        </label>
+        <input
+          id="s-location"
+          type="text"
+          [formField]="settingsForm.location"
+          [placeholder]="text.SETTINGS_LOCATION_PLACEHOLDER"
+          class="input input-bordered w-full"
+          [class.input-error]="settingsForm.location().invalid() && settingsForm.location().touched()" />
+        @if (settingsForm.location().invalid() && settingsForm.location().touched()) {
+          @for (error of settingsForm.location().errors(); track error) {
+            <p class="text-xs text-error mt-1">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Address -->
+      <div class="flex flex-col gap-1">
+        <label for="s-address" class="text-sm font-medium text-base-content/80">
+          {{ text.SETTINGS_ADDRESS_LABEL }}
+        </label>
+        <input
+          id="s-address"
+          type="text"
+          [formField]="settingsForm.address"
+          [placeholder]="text.SETTINGS_ADDRESS_PLACEHOLDER"
+          class="input input-bordered w-full"
+          [class.input-error]="settingsForm.address().invalid() && settingsForm.address().touched()" />
+        @if (settingsForm.address().invalid() && settingsForm.address().touched()) {
+          @for (error of settingsForm.address().errors(); track error) {
+            <p class="text-xs text-error mt-1">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Country -->
+      <div class="flex flex-col gap-1">
+        <label for="s-country" class="text-sm font-medium text-base-content/80">
+          {{ text.SETTINGS_COUNTRY_LABEL }}
+        </label>
+        <select
+          id="s-country"
+          [formField]="settingsForm.country"
+          class="select select-bordered w-full"
+          [class.select-error]="settingsForm.country().invalid() && settingsForm.country().touched()"
+          aria-label="Select country">
+          <option value="">{{ text.SETTINGS_COUNTRY_PLACEHOLDER }}</option>
+          @for (c of countries; track c.code) {
+            <option [value]="c.code">{{ c.name }}</option>
+          }
+        </select>
+        @if (settingsForm.country().invalid() && settingsForm.country().touched()) {
+          @for (error of settingsForm.country().errors(); track error) {
+            <p class="text-xs text-error mt-1">{{ error.message }}</p>
+          }
+        }
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3 pt-2">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="settingsForm().invalid() || formState().isSubmitting">
+          @if (formState().isSubmitting) {
+            {{ text.SETTINGS_SAVING }}
+          } @else {
+            {{ text.SETTINGS_SAVE }}
+          }
+        </button>
+        <button
+          type="button"
+          class="btn btn-ghost"
+          [disabled]="formState().isSubmitting"
+          (click)="cancelEdit()">
+          {{ text.SETTINGS_CANCEL }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

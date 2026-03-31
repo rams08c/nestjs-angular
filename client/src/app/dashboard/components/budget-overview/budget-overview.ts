@@ -20,6 +20,7 @@ export class BudgetOverview {
   readonly budgets = this.dataFlowService.budgetsForCurrentUser;
   readonly loadingBudgets = this.dataFlowService.loadingBudgets;
   readonly deleteError = signal<string | null>(null);
+  readonly currencyCode = this.dataFlowService.currencyCode;
   readonly totalBudgeted = computed(() =>
     this.budgets().reduce((sum, budget) => sum + budget.limitAmount, 0),
   );

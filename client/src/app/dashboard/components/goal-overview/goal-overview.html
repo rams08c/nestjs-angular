@@ -8,7 +8,7 @@
       <div class="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto sm:justify-end">
         <div class="min-w-0 text-left sm:text-right">
           <p class="text-xs uppercase tracking-[0.16em] text-base-content/50">Saved</p>
-          <p class="text-lg font-semibold text-info">{{ totalSaved() | currency:'USD':'symbol':'1.0-0' }}</p>
+          <p class="text-lg font-semibold text-info">{{ totalSaved() | currency:currencyCode():'symbol':'1.0-0' }}</p>
         </div>
         <button type="button" class="btn btn-primary btn-sm w-full shrink-0 sm:w-auto" (click)="openAddGoal()">
           {{ text.GOAL_ADD_BUTTON }}
@@ -59,11 +59,11 @@
               </div>
               <div>
                 <p class="text-xs text-base-content/60">{{ text.GOAL_SAVED_LABEL }}</p>
-                <p class="text-sm font-medium text-success">{{ goal.savedAmount | currency:'USD':'symbol':'1.2-2' }}</p>
+                <p class="text-sm font-medium text-success">{{ goal.savedAmount | currency:currencyCode():'symbol':'1.2-2' }}</p>
               </div>
               <div>
                 <p class="text-xs text-base-content/60">{{ text.GOAL_REMAINING_LABEL }}</p>
-                <p class="text-sm font-medium text-base-content">{{ goal.remainingAmount | currency:'USD':'symbol':'1.2-2' }}</p>
+                <p class="text-sm font-medium text-base-content">{{ goal.remainingAmount | currency:currencyCode():'symbol':'1.2-2' }}</p>
               </div>
             </div>
 
@@ -75,8 +75,8 @@
             ></progress>
 
             <div class="mt-3 flex items-center justify-between text-xs text-base-content/65">
-              <span>{{ goal.savedAmount | currency:'USD':'symbol':'1.0-0' }} saved</span>
-              <span>{{ goal.targetAmount | currency:'USD':'symbol':'1.0-0' }} target</span>
+              <span>{{ goal.savedAmount | currency:currencyCode():'symbol':'1.0-0' }} saved</span>
+              <span>{{ goal.targetAmount | currency:currencyCode():'symbol':'1.0-0' }} target</span>
             </div>
           </article>
         }

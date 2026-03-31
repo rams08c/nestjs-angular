@@ -26,6 +26,7 @@ type TransactionResponse = {
   date: string;
   userId: string;
   groupId: string | null;
+  accountId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -43,6 +44,7 @@ export class TransactionsService {
         ownerUserId: userId,
         categoryId: dto.categoryId,
         groupId: dto.groupId,
+        accountId: dto.accountId,
         amount: new Prisma.Decimal(dto.amount),
         currency: 'USD',
         note: dto.description,
@@ -114,6 +116,7 @@ export class TransactionsService {
       data: {
         categoryId: dto.categoryId,
         groupId: dto.groupId,
+        accountId: dto.accountId,
         amount:
           typeof dto.amount === 'number' ? new Prisma.Decimal(dto.amount) : undefined,
         note: dto.description,
@@ -192,6 +195,7 @@ export class TransactionsService {
       date: transaction.transactionDate.toISOString(),
       userId: transaction.ownerUserId,
       groupId: transaction.groupId,
+      accountId: transaction.accountId ?? null,
       createdAt: transaction.createdAt.toISOString(),
       updatedAt: transaction.updatedAt.toISOString(),
     };

@@ -7,9 +7,11 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { CategoriesModule } from './categories/categories.module';
 import { BudgetsModule } from './budgets/budgets.module';
 import { GoalsModule } from './goals/goals.module';
+import { AccountsModule } from './accounts/accounts.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, TransactionsModule, CategoriesModule, BudgetsModule, GoalsModule],
+  imports: [PrismaModule, AuthModule, TransactionsModule, CategoriesModule, BudgetsModule, GoalsModule, AccountsModule, SettingsModule],
   controllers: [AppController],
   providers: [AppService],
 })

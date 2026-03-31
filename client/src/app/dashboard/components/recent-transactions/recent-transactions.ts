@@ -20,6 +20,7 @@ export class RecentTransactions {
   readonly text = APP_TEXT.DASHBOARD;
   readonly transactions = this.dataFlowService.transactionsForCurrentUser;
   readonly loadingTransactions = this.svc.loadingTransactions;
+  readonly currencyCode = this.dataFlowService.currencyCode;
 
   /**
    * Returns daisyUI badge CSS classes based on category name

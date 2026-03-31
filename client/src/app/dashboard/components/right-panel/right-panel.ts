@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { DataFlowService } from '../../../shared-services/data-flow.service';
 import { APP_TEXT } from '../../../app.constant';
 
 @Component({
   selector: 'app-right-panel',
-  imports: [CommonModule],
+  imports: [CommonModule, CurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './right-panel.html',
 })
@@ -15,6 +15,7 @@ export class RightPanel {
   readonly currentUser = this.dataFlowService.currentUser;
   readonly budgets = this.dataFlowService.budgetsForCurrentUser;
   readonly goals = this.dataFlowService.goalsForCurrentUser;
+  readonly currencyCode = this.dataFlowService.currencyCode;
 
   readonly budgetProgress = computed(() => this.budgets().slice(0, 4));
   readonly upcomingGoals = computed(() =>

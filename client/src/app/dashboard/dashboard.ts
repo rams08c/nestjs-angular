@@ -12,6 +12,8 @@ import { BudgetOverview } from './components/budget-overview/budget-overview';
 import { GoalOverview } from './components/goal-overview/goal-overview';
 import { BudgetForm } from './components/budget-form/budget-form';
 import { GoalForm } from './components/goal-form/goal-form';
+import { AccountPanel } from './components/account-panel/account-panel';
+import { SettingsPanel } from './components/settings-panel/settings-panel';
 import { APP_ERROR_MESSAGES, APP_TEXT } from '../app.constant';
 import { DataFlowService } from '../shared-services/data-flow.service';
 
@@ -55,6 +57,8 @@ interface NavItem {
     GoalOverview,
     BudgetForm,
     GoalForm,
+    AccountPanel,
+    SettingsPanel,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.html',
@@ -66,6 +70,8 @@ export class Dashboard implements OnInit {
   readonly text = APP_TEXT.DASHBOARD;
   readonly isAuthenticated = computed(() => this.dataFlowService.isAuthenticated());
   readonly loadError = signal<string>('');
+  readonly currencyCode = this.dataFlowService.currencyCode;
+  readonly currencySymbol = this.dataFlowService.currencySymbol;
   private readonly routeSection = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('section'))),
     { initialValue: this.route.snapshot.paramMap.get('section') },

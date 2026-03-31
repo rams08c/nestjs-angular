@@ -11,7 +11,7 @@
         <div
           class="flex-1 bg-primary/50 rounded-t hover:bg-primary transition-colors"
           [style.height.%]="barHeight(point.amount)"
-          [title]="point.date + ': $' + point.amount"
+          [title]="point.date + ': ' + currencySymbol() + point.amount"
         ></div>
       }
     </div>
