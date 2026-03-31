@@ -1,0 +1,86 @@
+<div class="card h-full rounded-xl border border-base-300 bg-base-100 shadow-sm">
+  <div class="card-body h-full gap-4 p-5">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div class="min-w-0">
+        <h3 class="card-title text-lg">{{ text.GOALS_TITLE }}</h3>
+        <p class="text-sm text-base-content/65">{{ text.GOALS_SUBTITLE }}</p>
+      </div>
+      <div class="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+        <div class="text-left sm:text-right">
+          <p class="text-xs uppercase tracking-[0.16em] text-base-content/50">Saved</p>
+          <p class="text-lg font-semibold text-info">{{ totalSaved() | currency:'USD':'symbol':'1.0-0' }}</p>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm w-full sm:w-auto" (click)="openAddGoal()">
+          {{ text.GOAL_ADD_BUTTON }}
+        </button>
+      </div>
+    </div>
+
+    @if (deleteError()) {
+      <div class="alert alert-error" role="alert">
+        <span>{{ deleteError() }}</span>
+      </div>
+    }
+
+    @if (loadingGoals()) {
+      <div class="space-y-3">
+        <div class="skeleton h-28 w-full"></div>
+        <div class="skeleton h-28 w-full"></div>
+      </div>
+    } @else if (!goals().length) {
+      <div class="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-base-300 bg-base-200/50 p-4 text-center text-sm text-base-content/70">
+        <span>{{ text.GOAL_EMPTY }}</span>
+      </div>
+    } @else {
+      <div class="space-y-4">
+        @for (goal of goals(); track goal.id) {
+          <article class="rounded-xl border border-base-300 bg-gradient-to-r from-base-200/60 to-base-100 p-4">
+            <div class="mb-3 flex items-start justify-between gap-3">
+              <div>
+                <p class="text-base font-semibold text-base-content">{{ goal.name }}</p>
+                <p class="text-xs text-base-content/55">
+                  {{ text.GOAL_DEADLINE_LABEL }}: {{ goal.targetDate | date:'mediumDate' }}
+                </p>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" class="btn btn-ghost btn-xs" (click)="openEditGoal(goal.id)">
+                  {{ text.GOAL_EDIT }}
+                </button>
+                <button type="button" class="btn btn-ghost btn-xs text-error" (click)="deleteGoal(goal.id)">
+                  {{ text.GOAL_DELETE }}
+                </button>
+              </div>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div>
+                <p class="text-xs text-base-content/60">{{ text.GOAL_PROGRESS_LABEL }}</p>
+                <p class="text-xl font-semibold text-base-content">{{ goal.progressPercent }}%</p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">{{ text.GOAL_SAVED_LABEL }}</p>
+                <p class="text-sm font-medium text-success">{{ goal.savedAmount | currency:'USD':'symbol':'1.2-2' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-base-content/60">{{ text.GOAL_REMAINING_LABEL }}</p>
+                <p class="text-sm font-medium text-base-content">{{ goal.remainingAmount | currency:'USD':'symbol':'1.2-2' }}</p>
+              </div>
+            </div>
+
+            <progress
+              class="mt-4 h-2 w-full"
+              [class]="progressClass(goal.progressPercent)"
+              [value]="goal.savedAmount"
+              [max]="goal.targetAmount"
+            ></progress>
+
+            <div class="mt-3 flex items-center justify-between text-xs text-base-content/65">
+              <span>{{ goal.savedAmount | currency:'USD':'symbol':'1.0-0' }} saved</span>
+              <span>{{ goal.targetAmount | currency:'USD':'symbol':'1.0-0' }} target</span>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,98 @@
+@if (formState().isOpen) {
+  <dialog class="modal modal-open" aria-labelledby="goal-form-title" aria-modal="true" role="dialog">
+    <div class="modal-box">
+      <h3 id="goal-form-title" class="text-lg font-semibold mb-4">{{ title() }}</h3>
+
+      @if (formState().submitError) {
+        <div class="alert alert-error mb-3" role="alert">
+          <span>{{ formState().submitError }}</span>
+        </div>
+      }
+
+      <form class="space-y-3" [formRoot]="goalForm">
+        <div class="flex flex-col gap-1">
+          <label for="goal-name" class="text-sm font-medium">{{ text.GOAL_NAME_LABEL }}</label>
+          <input
+            id="goal-name"
+            type="text"
+            class="input input-bordered w-full"
+            [formField]="goalForm.name"
+            [placeholder]="text.GOAL_NAME_PLACEHOLDER"
+            [class.input-error]="goalForm.name().invalid() && goalForm.name().touched()"
+          />
+          @if (goalForm.name().invalid() && goalForm.name().touched()) {
+            @for (error of goalForm.name().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div class="flex flex-col gap-1">
+            <label for="goal-target" class="text-sm font-medium">{{ text.GOAL_TARGET_LABEL }}</label>
+            <input
+              id="goal-target"
+              type="number"
+              class="input input-bordered w-full"
+              [formField]="goalForm.targetAmount"
+              [class.input-error]="goalForm.targetAmount().invalid() && goalForm.targetAmount().touched()"
+            />
+            @if (goalForm.targetAmount().invalid() && goalForm.targetAmount().touched()) {
+              @for (error of goalForm.targetAmount().errors(); track error) {
+                <p class="text-xs text-error">{{ error.message }}</p>
+              }
+            }
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="goal-saved" class="text-sm font-medium">{{ text.GOAL_SAVED_LABEL }}</label>
+            <input
+              id="goal-saved"
+              type="number"
+              class="input input-bordered w-full"
+              [formField]="goalForm.savedAmount"
+              [class.input-error]="goalForm.savedAmount().invalid() && goalForm.savedAmount().touched()"
+            />
+            @if (goalForm.savedAmount().invalid() && goalForm.savedAmount().touched()) {
+              @for (error of goalForm.savedAmount().errors(); track error) {
+                <p class="text-xs text-error">{{ error.message }}</p>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="goal-date" class="text-sm font-medium">{{ text.GOAL_DATE_LABEL }}</label>
+          <input
+            id="goal-date"
+            type="date"
+            class="input input-bordered w-full"
+            [formField]="goalForm.targetDate"
+            [class.input-error]="goalForm.targetDate().invalid() && goalForm.targetDate().touched()"
+          />
+          @if (goalForm.targetDate().invalid() && goalForm.targetDate().touched()) {
+            @for (error of goalForm.targetDate().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="modal-action">
+          <button type="button" class="btn btn-ghost" (click)="close()">{{ text.TRANSACTION_CANCEL }}</button>
+          <button type="submit" class="btn btn-primary" [disabled]="goalForm().invalid() || formState().isSubmitting">
+            @if (formState().isSubmitting) {
+              <span class="loading loading-spinner loading-sm"></span>
+              {{ text.GOAL_SAVING }}
+            } @else {
+              {{ text.GOAL_SAVE }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button type="button" (click)="close()" aria-label="Close goal form">close</button>
+    </form>
+  </dialog>
+}

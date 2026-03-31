@@ -64,3 +64,27 @@ export const CategoryErrors = {
   SYSTEM_FLAG_MUTATION_FORBIDDEN: () =>
     getErrorMessage('CATEGORIES', 'SYSTEM_FLAG_MUTATION_FORBIDDEN' as const),
 };
+
+/**
+ * Helper for BUDGETS feature errors
+ */
+export const BudgetErrors = {
+  BUDGET_NOT_FOUND: () =>
+    getErrorMessage('BUDGETS', 'BUDGET_NOT_FOUND' as const),
+  BUDGET_ACCESS_FORBIDDEN: () =>
+    getErrorMessage('BUDGETS', 'BUDGET_ACCESS_FORBIDDEN' as const),
+  BUDGET_CATEGORY_INVALID: () =>
+    getErrorMessage('BUDGETS', 'BUDGET_CATEGORY_INVALID' as const),
+};
+
+/**
+ * Helper for GOALS feature errors
+ */
+export const GoalErrors = {
+  GOAL_NOT_FOUND: () =>
+    getErrorMessage('GOALS', 'GOAL_NOT_FOUND' as const),
+  GOAL_ACCESS_FORBIDDEN: () =>
+    getErrorMessage('GOALS', 'GOAL_ACCESS_FORBIDDEN' as const),
+  GOAL_SAVED_EXCEEDS_TARGET: () =>
+    getErrorMessage('GOALS', 'GOAL_SAVED_EXCEEDS_TARGET' as const),
+};

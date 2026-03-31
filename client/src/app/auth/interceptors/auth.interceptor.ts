@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   HttpInterceptor,
   HttpRequest,
@@ -16,8 +16,8 @@ import { APP_API_ENDPOINTS } from '../../app.constant';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private excludedRoutes = [APP_API_ENDPOINTS.AUTH.LOGIN, APP_API_ENDPOINTS.AUTH.REGISTER];
-
-  constructor(private dataFlowService: DataFlowService, private router: Router) {}
+  private dataFlowService = inject(DataFlowService);
+  private router = inject(Router);
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Check if route should be excluded from token attachment

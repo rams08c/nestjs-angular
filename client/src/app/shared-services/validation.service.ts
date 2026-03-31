@@ -129,6 +129,106 @@ export class ValidationService {
     ];
   }
 
+  validateBudgetCategory(categoryId: string): ValidationResult {
+    const trimmed = (categoryId || '').trim();
+    if (!trimmed) {
+      return { field: 'categoryId', isValid: false, message: APP_ERROR_MESSAGES.BUDGET.CATEGORY_REQUIRED };
+    }
+    return { field: 'categoryId', isValid: true };
+  }
+
+  validateBudgetLimit(limitAmount: string): ValidationResult {
+    const trimmed = (limitAmount || '').trim();
+    if (!trimmed) {
+      return { field: 'limitAmount', isValid: false, message: APP_ERROR_MESSAGES.BUDGET.LIMIT_REQUIRED };
+    }
+
+    const numericAmount = Number(trimmed);
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      return { field: 'limitAmount', isValid: false, message: APP_ERROR_MESSAGES.BUDGET.LIMIT_POSITIVE };
+    }
+
+    return { field: 'limitAmount', isValid: true };
+  }
+
+  validateBudgetPeriod(period: string): ValidationResult {
+    const trimmed = (period || '').trim();
+    if (!trimmed) {
+      return { field: 'period', isValid: false, message: APP_ERROR_MESSAGES.BUDGET.PERIOD_REQUIRED };
+    }
+    return { field: 'period', isValid: true };
+  }
+
+  validateBudgetForm(data: { categoryId: string; limitAmount: string; period: string }): ValidationResult[] {
+    return [
+      this.validateBudgetCategory(data.categoryId),
+      this.validateBudgetLimit(data.limitAmount),
+      this.validateBudgetPeriod(data.period),
+    ];
+  }
+
+  validateGoalName(name: string): ValidationResult {
+    const trimmed = (name || '').trim();
+    if (!trimmed) {
+      return { field: 'name', isValid: false, message: APP_ERROR_MESSAGES.GOAL.NAME_REQUIRED };
+    }
+    return { field: 'name', isValid: true };
+  }
+
+  validateGoalTargetAmount(targetAmount: string): ValidationResult {
+    const trimmed = (targetAmount || '').trim();
+    if (!trimmed) {
+      return { field: 'targetAmount', isValid: false, message: APP_ERROR_MESSAGES.GOAL.TARGET_REQUIRED };
+    }
+
+    const numericAmount = Number(trimmed);
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      return { field: 'targetAmount', isValid: false, message: APP_ERROR_MESSAGES.GOAL.TARGET_POSITIVE };
+    }
+
+    return { field: 'targetAmount', isValid: true };
+  }
+
+  validateGoalSavedAmount(savedAmount: string, targetAmount?: string): ValidationResult {
+    const trimmed = (savedAmount || '').trim();
+    if (!trimmed) {
+      return { field: 'savedAmount', isValid: false, message: APP_ERROR_MESSAGES.GOAL.SAVED_REQUIRED };
+    }
+
+    const numericAmount = Number(trimmed);
+    if (!Number.isFinite(numericAmount) || numericAmount < 0) {
+      return { field: 'savedAmount', isValid: false, message: APP_ERROR_MESSAGES.GOAL.SAVED_NON_NEGATIVE };
+    }
+
+    if (targetAmount && Number.isFinite(Number(targetAmount)) && numericAmount > Number(targetAmount)) {
+      return { field: 'savedAmount', isValid: false, message: APP_ERROR_MESSAGES.GOAL.SAVED_EXCEEDS_TARGET };
+    }
+
+    return { field: 'savedAmount', isValid: true };
+  }
+
+  validateGoalTargetDate(targetDate: string): ValidationResult {
+    const trimmed = (targetDate || '').trim();
+    if (!trimmed) {
+      return { field: 'targetDate', isValid: false, message: APP_ERROR_MESSAGES.GOAL.TARGET_DATE_REQUIRED };
+    }
+
+    if (Number.isNaN(Date.parse(trimmed))) {
+      return { field: 'targetDate', isValid: false, message: APP_ERROR_MESSAGES.GOAL.TARGET_DATE_INVALID };
+    }
+
+    return { field: 'targetDate', isValid: true };
+  }
+
+  validateGoalForm(data: { name: string; targetAmount: string; savedAmount: string; targetDate: string }): ValidationResult[] {
+    return [
+      this.validateGoalName(data.name),
+      this.validateGoalTargetAmount(data.targetAmount),
+      this.validateGoalSavedAmount(data.savedAmount, data.targetAmount),
+      this.validateGoalTargetDate(data.targetDate),
+    ];
+  }
+
   isFormValid(errors: ValidationResult[]): boolean {
     return errors.every((error) => error.isValid);
   }

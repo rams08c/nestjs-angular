@@ -43,18 +43,48 @@
     <div class="card-body p-4">
       <h3 class="card-title text-base font-semibold mb-3">{{ text.BUDGET_PROGRESS_TITLE }}</h3>
       <div class="space-y-4">
-        @for (budget of budgetProgress(); track budget.category) {
+        @for (budget of budgetProgress(); track budget.id) {
           <div>
             <div class="flex justify-between mb-1">
-              <p class="text-xs font-semibold text-base-content">{{ budget.category }}</p>
-              <p class="text-xs text-base-content/60">{{ budget.spent }}/{{ budget.allocated }}</p>
+              <p class="text-xs font-semibold text-base-content">{{ budget.categoryName }}</p>
+              <p class="text-xs text-base-content/60">{{ budget.progressPercent }}%</p>
             </div>
             <progress 
               class="progress w-full h-2" 
-              [value]="budget.spent" 
-              [max]="budget.allocated"
+              [value]="budget.usedAmount" 
+              [max]="budget.limitAmount"
             ></progress>
+            <p class="mt-1 text-[11px] text-base-content/55">
+              {{ budget.usedAmount | currency:'USD':'symbol':'1.0-0' }} of {{ budget.limitAmount | currency:'USD':'symbol':'1.0-0' }}
+            </p>
           </div>
+        }
+        @if (!budgetProgress().length) {
+          <p class="text-xs text-base-content/60">{{ text.BUDGET_EMPTY }}</p>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="card bg-base-200 shadow-sm">
+    <div class="card-body p-4">
+      <h3 class="card-title text-base font-semibold mb-3">{{ text.GOALS_TITLE }}</h3>
+      <div class="space-y-3">
+        @for (goal of upcomingGoals(); track goal.id) {
+          <div class="rounded-xl border border-base-300 bg-base-100 px-3 py-2">
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-sm font-medium text-base-content">{{ goal.name }}</p>
+              <span class="text-xs text-base-content/55">{{ goal.progressPercent }}%</span>
+            </div>
+            <progress class="progress progress-primary mt-2 h-2 w-full" [value]="goal.savedAmount" [max]="goal.targetAmount"></progress>
+            <div class="mt-2 flex items-center justify-between text-[11px] text-base-content/55">
+              <span>{{ goal.savedAmount | currency:'USD':'symbol':'1.0-0' }}</span>
+              <span>{{ goal.targetDate | date:'MMM d' }}</span>
+            </div>
+          </div>
+        }
+        @if (!upcomingGoals().length) {
+          <p class="text-xs text-base-content/60">{{ text.GOAL_EMPTY }}</p>
         }
       </div>
     </div>

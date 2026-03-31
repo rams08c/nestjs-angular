@@ -1,5 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 import {
+  BudgetItem,
+  defaultBudgetFormState,
+  defaultGoalFormState,
+  EntityFormState,
+  GoalFormModel,
+  GoalItem,
+  BudgetFormModel,
+} from '../../budget-goal/budget-goal.model';
+import {
   defaultDeleteConfirmState,
   defaultTransactionFormState,
   DeleteConfirmState,
@@ -43,11 +52,17 @@ export class DashboardSignalService {
 
   readonly recentTransactions = signal<TransactionItem[]>([]);
   readonly categories = signal<TransactionCategory[]>([]);
+  readonly budgets = signal<BudgetItem[]>([]);
+  readonly goals = signal<GoalItem[]>([]);
 
   readonly loadingTransactions = signal(false);
   readonly loadingCategories = signal(false);
+  readonly loadingBudgets = signal(false);
+  readonly loadingGoals = signal(false);
   readonly formState = signal<TransactionFormState>({ ...defaultTransactionFormState });
   readonly deleteState = signal<DeleteConfirmState>({ ...defaultDeleteConfirmState });
+  readonly budgetFormState = signal<EntityFormState<BudgetFormModel>>({ ...defaultBudgetFormState });
+  readonly goalFormState = signal<EntityFormState<GoalFormModel>>({ ...defaultGoalFormState });
 
   readonly budgetProgress = signal<BudgetCategory[]>([
     { category: 'Food & Dining', allocated: 500, spent: 320 },
@@ -97,12 +112,36 @@ export class DashboardSignalService {
     this.categories.set(categories);
   }
 
+  setBudgets(budgets: BudgetItem[]): void {
+    this.budgets.set(budgets);
+  }
+
+  setGoals(goals: GoalItem[]): void {
+    this.goals.set(goals);
+  }
+
   setLoadingTransactions(isLoading: boolean): void {
     this.loadingTransactions.set(isLoading);
   }
 
   setLoadingCategories(isLoading: boolean): void {
     this.loadingCategories.set(isLoading);
+  }
+
+  setLoadingBudgets(isLoading: boolean): void {
+    this.loadingBudgets.set(isLoading);
+  }
+
+  setLoadingGoals(isLoading: boolean): void {
+    this.loadingGoals.set(isLoading);
+  }
+
+  setBudgetFormState(state: EntityFormState<BudgetFormModel>): void {
+    this.budgetFormState.set(state);
+  }
+
+  setGoalFormState(state: EntityFormState<GoalFormModel>): void {
+    this.goalFormState.set(state);
   }
 
   addTransaction(transaction: TransactionItem): void {
@@ -119,5 +158,33 @@ export class DashboardSignalService {
     this.recentTransactions.update((transactions) =>
       transactions.filter((tx) => tx.id !== transactionId),
     );
+  }
+
+  addBudget(budget: BudgetItem): void {
+    this.budgets.update((budgets) => [budget, ...budgets]);
+  }
+
+  updateBudget(budgetId: string, updates: Partial<BudgetItem>): void {
+    this.budgets.update((budgets) =>
+      budgets.map((budget) => (budget.id === budgetId ? { ...budget, ...updates } : budget)),
+    );
+  }
+
+  removeBudget(budgetId: string): void {
+    this.budgets.update((budgets) => budgets.filter((budget) => budget.id !== budgetId));
+  }
+
+  addGoal(goal: GoalItem): void {
+    this.goals.update((goals) => [goal, ...goals]);
+  }
+
+  updateGoal(goalId: string, updates: Partial<GoalItem>): void {
+    this.goals.update((goals) =>
+      goals.map((goal) => (goal.id === goalId ? { ...goal, ...updates } : goal)),
+    );
+  }
+
+  removeGoal(goalId: string): void {
+    this.goals.update((goals) => goals.filter((goal) => goal.id !== goalId));
   }
 }

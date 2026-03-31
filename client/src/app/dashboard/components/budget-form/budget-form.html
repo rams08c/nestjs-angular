@@ -1,0 +1,79 @@
+@if (formState().isOpen) {
+  <dialog class="modal modal-open" aria-labelledby="budget-form-title" aria-modal="true" role="dialog">
+    <div class="modal-box">
+      <h3 id="budget-form-title" class="text-lg font-semibold mb-4">{{ title() }}</h3>
+
+      @if (formState().submitError) {
+        <div class="alert alert-error mb-3" role="alert">
+          <span>{{ formState().submitError }}</span>
+        </div>
+      }
+
+      <form class="space-y-3" [formRoot]="budgetForm">
+        <div class="flex flex-col gap-1">
+          <label for="budget-category" class="text-sm font-medium">{{ text.BUDGET_CATEGORY_LABEL }}</label>
+          <select
+            id="budget-category"
+            class="select select-bordered w-full"
+            [formField]="budgetForm.categoryId"
+            [class.select-error]="budgetForm.categoryId().invalid() && budgetForm.categoryId().touched()"
+          >
+            <option value="">{{ text.TRANSACTION_CATEGORY_PLACEHOLDER }}</option>
+            @for (category of categories(); track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+            }
+          </select>
+          @if (budgetForm.categoryId().invalid() && budgetForm.categoryId().touched()) {
+            @for (error of budgetForm.categoryId().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="budget-limit" class="text-sm font-medium">{{ text.BUDGET_LIMIT_LABEL }}</label>
+          <input
+            id="budget-limit"
+            type="number"
+            class="input input-bordered w-full"
+            [formField]="budgetForm.limitAmount"
+            [class.input-error]="budgetForm.limitAmount().invalid() && budgetForm.limitAmount().touched()"
+          />
+          @if (budgetForm.limitAmount().invalid() && budgetForm.limitAmount().touched()) {
+            @for (error of budgetForm.limitAmount().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="budget-period" class="text-sm font-medium">{{ text.BUDGET_PERIOD_LABEL }}</label>
+          <select
+            id="budget-period"
+            class="select select-bordered w-full"
+            [formField]="budgetForm.period"
+            [class.select-error]="budgetForm.period().invalid() && budgetForm.period().touched()"
+          >
+            <option value="monthly">{{ text.BUDGET_PERIOD_MONTHLY }}</option>
+          </select>
+        </div>
+
+        <div class="modal-action">
+          <button type="button" class="btn btn-ghost" (click)="close()">{{ text.TRANSACTION_CANCEL }}</button>
+          <button type="submit" class="btn btn-primary" [disabled]="budgetForm().invalid() || formState().isSubmitting">
+            @if (formState().isSubmitting) {
+              <span class="loading loading-spinner loading-sm"></span>
+              {{ text.BUDGET_SAVING }}
+            } @else {
+              {{ text.BUDGET_SAVE }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <form method="dialog" class="modal-backdrop">
+      <button type="button" (click)="close()" aria-label="Close budget form">close</button>
+    </form>
+  </dialog>
+}

@@ -8,6 +8,11 @@ export const routes: Routes = [
   { path: 'register', loadComponent: () => import('./auth/register/register').then(m => m.Register) },
   {
     path: 'dashboard',
+    pathMatch: 'full',
+    redirectTo: 'dashboard/overview',
+  },
+  {
+    path: 'dashboard/:section',
     loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard),
     canActivate: [authGuard],
   },

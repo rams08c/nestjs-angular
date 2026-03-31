@@ -1,5 +1,17 @@
-import { Injectable, computed } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
 import { finalize, forkJoin, Observable, tap } from 'rxjs';
+import {
+  BudgetFormModel,
+  BudgetItem,
+  defaultBudgetFormModel,
+  defaultBudgetFormState,
+  defaultGoalFormModel,
+  defaultGoalFormState,
+  GoalFormModel,
+  GoalItem,
+} from '../budget-goal/budget-goal.model';
+import { BudgetApiService } from '../budget-goal/services/budget-api.service';
+import { GoalApiService } from '../budget-goal/services/goal-api.service';
 import { SignalService, User } from './signal.service';
 import { DashboardSignalService } from '../dashboard/services/dashboard-signal.service';
 import { TransactionApiService } from '../dashboard/services/transaction-api.service';
@@ -16,11 +28,11 @@ import {
   providedIn: 'root',
 })
 export class DataFlowService {
-  constructor(
-    private signalService: SignalService,
-    private dashboardSignalService: DashboardSignalService,
-    private transactionApiService: TransactionApiService,
-  ) {}
+  private signalService = inject(SignalService);
+  private dashboardSignalService = inject(DashboardSignalService);
+  private transactionApiService = inject(TransactionApiService);
+  private budgetApiService = inject(BudgetApiService);
+  private goalApiService = inject(GoalApiService);
 
   get isLoggedIn() {
     return this.signalService.isLoggedIn;
@@ -50,6 +62,30 @@ export class DataFlowService {
     return this.dashboardSignalService.loadingCategories;
   }
 
+  get budgets() {
+    return this.dashboardSignalService.budgets;
+  }
+
+  get goals() {
+    return this.dashboardSignalService.goals;
+  }
+
+  get loadingBudgets() {
+    return this.dashboardSignalService.loadingBudgets;
+  }
+
+  get loadingGoals() {
+    return this.dashboardSignalService.loadingGoals;
+  }
+
+  get budgetFormState() {
+    return this.dashboardSignalService.budgetFormState;
+  }
+
+  get goalFormState() {
+    return this.dashboardSignalService.goalFormState;
+  }
+
   readonly transactionsForCurrentUser = computed(() => {
     if (!this.isAuthenticated()) {
       return [];
@@ -64,6 +100,28 @@ export class DataFlowService {
             .categories()
             .find((category) => category.id === transaction.categoryId)?.name ?? transaction.categoryId,
       }));
+  });
+
+  readonly budgetsForCurrentUser = computed(() => {
+    if (!this.isAuthenticated()) {
+      return [];
+    }
+
+    return this.dashboardSignalService.budgets().map((budget) => ({
+      ...budget,
+      categoryName:
+        this.dashboardSignalService
+          .categories()
+          .find((category) => category.id === budget.categoryId)?.name ?? budget.categoryId,
+    }));
+  });
+
+  readonly goalsForCurrentUser = computed(() => {
+    if (!this.isAuthenticated()) {
+      return [];
+    }
+
+    return this.dashboardSignalService.goals();
   });
 
   loginUser(user: User, token: string): void {
@@ -99,6 +157,57 @@ export class DataFlowService {
       finalize(() => {
         this.dashboardSignalService.setLoadingTransactions(false);
         this.dashboardSignalService.setLoadingCategories(false);
+      }),
+    );
+  }
+
+  loadBudgetGoalData(): Observable<{ budgets: BudgetItem[]; goals: GoalItem[] }> {
+    this.dashboardSignalService.setLoadingBudgets(true);
+    this.dashboardSignalService.setLoadingGoals(true);
+
+    return forkJoin({
+      budgets: this.budgetApiService.getBudgets(),
+      goals: this.goalApiService.getGoals(),
+    }).pipe(
+      tap(({ budgets, goals }) => {
+        this.dashboardSignalService.setBudgets(budgets);
+        this.dashboardSignalService.setGoals(goals);
+      }),
+      finalize(() => {
+        this.dashboardSignalService.setLoadingBudgets(false);
+        this.dashboardSignalService.setLoadingGoals(false);
+      }),
+    );
+  }
+
+  loadDashboardData(): Observable<{
+    transactions: TransactionItem[];
+    categories: TransactionCategory[];
+    budgets: BudgetItem[];
+    goals: GoalItem[];
+  }> {
+    this.dashboardSignalService.setLoadingTransactions(true);
+    this.dashboardSignalService.setLoadingCategories(true);
+    this.dashboardSignalService.setLoadingBudgets(true);
+    this.dashboardSignalService.setLoadingGoals(true);
+
+    return forkJoin({
+      transactions: this.transactionApiService.getTransactions(),
+      categories: this.transactionApiService.getCategories(),
+      budgets: this.budgetApiService.getBudgets(),
+      goals: this.goalApiService.getGoals(),
+    }).pipe(
+      tap(({ transactions, categories, budgets, goals }) => {
+        this.dashboardSignalService.setTransactions(transactions);
+        this.dashboardSignalService.setCategories(categories);
+        this.dashboardSignalService.setBudgets(budgets);
+        this.dashboardSignalService.setGoals(goals);
+      }),
+      finalize(() => {
+        this.dashboardSignalService.setLoadingTransactions(false);
+        this.dashboardSignalService.setLoadingCategories(false);
+        this.dashboardSignalService.setLoadingBudgets(false);
+        this.dashboardSignalService.setLoadingGoals(false);
       }),
     );
   }
@@ -139,6 +248,80 @@ export class DataFlowService {
     this.dashboardSignalService.setFormState({
       ...defaultTransactionFormState,
       values: { ...defaultTransactionFormModel },
+    });
+  }
+
+  openAddBudgetDrawer(): void {
+    this.dashboardSignalService.setBudgetFormState({
+      ...defaultBudgetFormState,
+      mode: 'add',
+      isOpen: true,
+      values: { ...defaultBudgetFormModel },
+    });
+  }
+
+  openEditBudgetDrawer(budgetId: string): void {
+    const budget = this.dashboardSignalService.budgets().find((item) => item.id === budgetId);
+    if (!budget) {
+      return;
+    }
+
+    this.dashboardSignalService.setBudgetFormState({
+      ...defaultBudgetFormState,
+      mode: 'edit',
+      isOpen: true,
+      editingId: budget.id,
+      values: {
+        categoryId: budget.categoryId,
+        limitAmount: String(budget.limitAmount),
+        period: budget.period,
+      },
+    });
+  }
+
+  closeBudgetDrawer(): void {
+    this.dashboardSignalService.setBudgetFormState({
+      ...defaultBudgetFormState,
+      values: { ...defaultBudgetFormModel },
+    });
+  }
+
+  openAddGoalDrawer(): void {
+    this.dashboardSignalService.setGoalFormState({
+      ...defaultGoalFormState,
+      mode: 'add',
+      isOpen: true,
+      values: {
+        ...defaultGoalFormModel,
+        targetDate: new Date().toISOString().slice(0, 10),
+      },
+    });
+  }
+
+  openEditGoalDrawer(goalId: string): void {
+    const goal = this.dashboardSignalService.goals().find((item) => item.id === goalId);
+    if (!goal) {
+      return;
+    }
+
+    this.dashboardSignalService.setGoalFormState({
+      ...defaultGoalFormState,
+      mode: 'edit',
+      isOpen: true,
+      editingId: goal.id,
+      values: {
+        name: goal.name,
+        targetAmount: String(goal.targetAmount),
+        savedAmount: String(goal.savedAmount),
+        targetDate: goal.targetDate.slice(0, 10),
+      },
+    });
+  }
+
+  closeGoalDrawer(): void {
+    this.dashboardSignalService.setGoalFormState({
+      ...defaultGoalFormState,
+      values: { ...defaultGoalFormModel },
     });
   }
 
@@ -237,5 +420,117 @@ export class DataFlowService {
 
   getCategoryById(categoryId: string): TransactionCategory | undefined {
     return this.dashboardSignalService.categories().find((category) => category.id === categoryId);
+  }
+
+  createBudget(values: BudgetFormModel): Observable<BudgetItem> {
+    return this.budgetApiService
+      .createBudget({
+        categoryId: values.categoryId,
+        limitAmount: Number(values.limitAmount),
+        period: values.period,
+      })
+      .pipe(
+        tap((budget) => {
+          this.dashboardSignalService.addBudget(budget);
+        }),
+      );
+  }
+
+  updateBudget(values: BudgetFormModel): Observable<BudgetItem> {
+    const formState = this.dashboardSignalService.budgetFormState();
+    if (!formState.editingId) {
+      throw new Error('Missing budget id');
+    }
+
+    return this.budgetApiService
+      .updateBudget(formState.editingId, {
+        categoryId: values.categoryId,
+        limitAmount: Number(values.limitAmount),
+        period: values.period,
+      })
+      .pipe(
+        tap((budget) => {
+          this.dashboardSignalService.updateBudget(formState.editingId!, budget);
+        }),
+      );
+  }
+
+  deleteBudget(budgetId: string): Observable<void> {
+    return this.budgetApiService.deleteBudget(budgetId).pipe(
+      tap(() => {
+        this.dashboardSignalService.removeBudget(budgetId);
+      }),
+    );
+  }
+
+  setBudgetSubmitting(isSubmitting: boolean): void {
+    this.dashboardSignalService.budgetFormState.update((state) => ({
+      ...state,
+      isSubmitting,
+    }));
+  }
+
+  setBudgetSubmitError(message: string | null): void {
+    this.dashboardSignalService.budgetFormState.update((state) => ({
+      ...state,
+      submitError: message,
+    }));
+  }
+
+  createGoal(values: GoalFormModel): Observable<GoalItem> {
+    return this.goalApiService
+      .createGoal({
+        name: values.name.trim(),
+        targetAmount: Number(values.targetAmount),
+        savedAmount: Number(values.savedAmount),
+        targetDate: values.targetDate,
+      })
+      .pipe(
+        tap((goal) => {
+          this.dashboardSignalService.addGoal(goal);
+        }),
+      );
+  }
+
+  updateGoal(values: GoalFormModel): Observable<GoalItem> {
+    const formState = this.dashboardSignalService.goalFormState();
+    if (!formState.editingId) {
+      throw new Error('Missing goal id');
+    }
+
+    return this.goalApiService
+      .updateGoal(formState.editingId, {
+        name: values.name.trim(),
+        targetAmount: Number(values.targetAmount),
+        savedAmount: Number(values.savedAmount),
+        targetDate: values.targetDate,
+      })
+      .pipe(
+        tap((goal) => {
+          this.dashboardSignalService.updateGoal(formState.editingId!, goal);
+        }),
+      );
+  }
+
+  deleteGoal(goalId: string): Observable<void> {
+    return this.goalApiService.deleteGoal(goalId).pipe(
+      tap(() => {
+        this.dashboardSignalService.removeGoal(goalId);
+      }),
+    );
+  }
+
+  setGoalSubmitting(isSubmitting: boolean): void {
+    this.dashboardSignalService.goalFormState.update((state) => ({
+      ...state,
+      isSubmitting,
+    }));
+  }
+
+  setGoalSubmitError(message: string | null): void {
+    this.dashboardSignalService.goalFormState.update((state) => ({
+      ...state,
+      submitError: message,
+    }));
   }
 }

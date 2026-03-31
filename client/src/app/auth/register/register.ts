@@ -28,8 +28,9 @@ export class Register implements OnInit {
   private router = inject(Router);
   private dataFlowService = inject(DataFlowService);
   private authService = inject(AuthService);
+  private validationService = inject(ValidationService);
 
-  constructor(private readonly validationService: ValidationService){
+  constructor(){
      this.registerForm = form(this.registerModel,(schemaPath)=> {
        validateStandardSchema(schemaPath,RegisterSchema);
        this.validationService.checkEmailAvailability(schemaPath);
