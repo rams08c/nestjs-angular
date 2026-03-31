@@ -1,0 +1,169 @@
+# Feature: Budget & Goal
+
+## Goal
+- Build Budget and Goal modules for a money tracking application
+- Backend: Provide authenticated CRUD APIs for Budgets and Goals
+- Backend: Persist budget and goal data with Prisma and PostgreSQL
+- Backend: Compute and return progress data for budget usage and goal savings
+- Frontend: Provide Budget and Goal list/create/edit/delete user flows
+- Frontend: Use Signal-based forms, Signal Service state, and Data Flow Service updates
+- Frontend: Display budget used vs limit and goal percentage progress in dashboard and module views
+
+## API
+- Backend Budget endpoints:
+- `POST /budgets`
+- `GET /budgets`
+- `PUT /budgets/:id`
+- `DELETE /budgets/:id`
+- Backend Goal endpoints:
+- `POST /goals`
+- `GET /goals`
+- `PUT /goals/:id`
+- `DELETE /goals/:id`
+- Backend response fields for budget list/detail:
+- `id`
+- `categoryId`
+- `limitAmount`
+- `period`
+- `usedAmount`
+- `remainingAmount`
+- `progressPercent`
+- `createdAt`
+- `updatedAt`
+- Backend response fields for goal list/detail:
+- `id`
+- `name`
+- `targetAmount`
+- `savedAmount`
+- `targetDate`
+- `remainingAmount`
+- `progressPercent`
+- `createdAt`
+- `updatedAt`
+- Frontend API integration:
+- Use authenticated requests with JWT token
+- Use Budget and Goal service wrappers for all endpoint calls
+- Emit Data Flow Service updates after create/update/delete success
+
+## DTO
+- Backend Budget Create DTO:
+- `categoryId: string`
+- `limitAmount: number`
+- `period: "monthly"`
+- Backend Budget Update DTO:
+- `categoryId?: string`
+- `limitAmount?: number`
+- `period?: "monthly"`
+- Backend Goal Create DTO:
+- `name: string`
+- `targetAmount: number`
+- `savedAmount: number`
+- `targetDate: string`
+- Backend Goal Update DTO:
+- `name?: string`
+- `targetAmount?: number`
+- `savedAmount?: number`
+- `targetDate?: string`
+- Frontend Budget form model:
+- `categoryId: string`
+- `limitAmount: string`
+- `period: "monthly"`
+- Frontend Goal form model:
+- `name: string`
+- `targetAmount: string`
+- `savedAmount: string`
+- `targetDate: string`
+
+## Rules
+- All budget and goal records must be linked to authenticated `userId` from JWT
+- Users can access only their own budgets and goals
+- Budget period must support `monthly`
+- `limitAmount` must be greater than 0
+- `targetAmount` must be greater than 0
+- `savedAmount` must be greater than or equal to 0
+- `savedAmount` must not exceed `targetAmount`
+- `targetDate` must be a valid future or current date
+- Budget progress must be computed as `usedAmount` vs `limitAmount`
+- Budget `usedAmount` must be derived from user expense transactions by `categoryId` within current monthly period
+- Goal progress must be computed as `savedAmount / targetAmount * 100`
+- Backend must return `remainingAmount` for both budget and goal payloads
+- Backend must round `progressPercent` to 2 decimal points
+- Backend must reject access to records owned by other users
+- Backend must recalculate budget progress on each read request
+- Frontend must use Signal-based forms only
+- Use Signal-based forms only
+- Do not use Reactive forms
+- Do not use Template-driven forms
+- Use shared Validation Service for form and DTO validation rules
+- Use Signal Service for module state
+- Use Data Flow Service for cross-component updates between dashboard, transactions, budget, and goal modules
+- Frontend must refresh local module state after every successful mutation
+- Frontend must show validation messages from shared Validation Service
+
+## DB (Prisma)
+- Backend Prisma Budget model:
+- `id: String @id @default(cuid())`
+- `userId: String`
+- `categoryId: String`
+- `limitAmount: Decimal @db.Decimal(12, 2)`
+- `period: String`
+- `createdAt: DateTime @default(now())`
+- `updatedAt: DateTime @updatedAt`
+- Relations:
+- `user` relation by `userId`
+- `category` relation by `categoryId`
+- Constraints:
+- `@@unique([userId, categoryId, period])`
+- `@@index([userId])`
+- Backend Prisma Goal model:
+- `id: String @id @default(cuid())`
+- `userId: String`
+- `name: String`
+- `targetAmount: Decimal @db.Decimal(12, 2)`
+- `savedAmount: Decimal @default(0) @db.Decimal(12, 2)`
+- `targetDate: DateTime`
+- `createdAt: DateTime @default(now())`
+- `updatedAt: DateTime @updatedAt`
+- Relations:
+- `user` relation by `userId`
+- Constraints:
+- `@@index([userId])`
+
+## Tasks
+- Backend:
+- Add Prisma `Budget` model
+- Add Prisma `Goal` model
+- Create and apply migrations
+- Implement Budget DTOs
+- Implement Goal DTOs
+- Create `budgets.module.ts`, `budgets.controller.ts`, `budgets.service.ts`
+- Create `goals.module.ts`, `goals.controller.ts`, `goals.service.ts`
+- Implement Budget service with user scoping
+- Implement Goal service with user scoping
+- Implement Budget controller endpoints
+- Implement Goal controller endpoints
+- Add JWT guard to Budget and Goal endpoints
+- Add Budget progress calculation from transactions
+- Add Goal progress percentage calculation
+- Register Budget and Goal modules in app module
+- Frontend:
+- Create Budget list and form UI with Signal-based forms
+- Create Goal list and form UI with Signal-based forms
+- Create Budget API service for CRUD requests
+- Create Goal API service for CRUD requests
+- Integrate shared Validation Service in Budget forms
+- Integrate shared Validation Service in Goal forms
+- Integrate Signal Service state for Budget module
+- Integrate Signal Service state for Goal module
+- Integrate Data Flow Service updates for dashboard sync
+- Show Budget progress as used vs limit
+- Show Goal progress as percentage
+- Testing:
+- Add Budget module unit tests
+- Add Goal module unit tests
+- Add API endpoint tests for Budget CRUD
+- Add API endpoint tests for Goal CRUD
+- Add progress calculation tests for Budget
+- Add progress calculation tests for Goal
+- Add frontend component tests for Budget forms and list states
+- Add frontend component tests for Goal forms and list states

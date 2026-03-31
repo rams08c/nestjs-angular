@@ -1,0 +1,262 @@
+openapi: 3.0.3
+info:
+  title: Budget and Goal API
+  version: 1.0.0
+paths:
+  /budgets:
+    post:
+      summary: Create budget
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetResponse'
+    get:
+      summary: List budgets
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BudgetResponse'
+  /budgets/{id}:
+    put:
+      summary: Update budget
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetResponse'
+    delete:
+      summary: Delete budget
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+  /goals:
+    post:
+      summary: Create goal
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGoalRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoalResponse'
+    get:
+      summary: List goals
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GoalResponse'
+  /goals/{id}:
+    put:
+      summary: Update goal
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGoalRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoalResponse'
+    delete:
+      summary: Delete goal
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CreateBudgetRequest:
+      type: object
+      required: [categoryId, limitAmount, period]
+      properties:
+        categoryId:
+          type: string
+        limitAmount:
+          type: number
+        period:
+          type: string
+          enum: [monthly]
+    UpdateBudgetRequest:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        limitAmount:
+          type: number
+        period:
+          type: string
+          enum: [monthly]
+    BudgetResponse:
+      type: object
+      required:
+        - id
+        - categoryId
+        - limitAmount
+        - period
+        - usedAmount
+        - remainingAmount
+        - progressPercent
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        categoryId:
+          type: string
+        limitAmount:
+          type: number
+        period:
+          type: string
+          enum: [monthly]
+        usedAmount:
+          type: number
+        remainingAmount:
+          type: number
+        progressPercent:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateGoalRequest:
+      type: object
+      required: [name, targetAmount, savedAmount, targetDate]
+      properties:
+        name:
+          type: string
+        targetAmount:
+          type: number
+        savedAmount:
+          type: number
+        targetDate:
+          type: string
+          format: date-time
+    UpdateGoalRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        targetAmount:
+          type: number
+        savedAmount:
+          type: number
+        targetDate:
+          type: string
+          format: date-time
+    GoalResponse:
+      type: object
+      required:
+        - id
+        - name
+        - targetAmount
+        - savedAmount
+        - targetDate
+        - remainingAmount
+        - progressPercent
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        targetAmount:
+          type: number
+        savedAmount:
+          type: number
+        targetDate:
+          type: string
+          format: date-time
+        remainingAmount:
+          type: number
+        progressPercent:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
