@@ -28,8 +28,9 @@
 - Transaction drawer/modal (DaisyUI inline)
 	- Add mode
 	- Edit mode
+	- Type selector (income | expense)
 	- Amount field
-	- Category field
+	- Category/Income Source field (label changes based on selected type)
 	- Date field
 	- Description field (optional)
 	- Save/submit action
@@ -49,6 +50,10 @@
 - Use shared Validation Service for transaction input validation
 - Use Signal Service for transaction state management
 - Use Data Flow Service for cross-component transaction updates
+- Transaction form includes a `type` selector (income | expense)
+- Category dropdown is filtered to only show categories matching the selected type
+- Category field label reads "Income Source" when type is `income`, "Category" when type is `expense`
+- `type` defaults to `expense` when opening add mode
 - Edit action opens transaction form with existing values prefilled
 - Delete action requires explicit user confirmation
 - After add, edit, or delete, transaction list updates immediately in dashboard context

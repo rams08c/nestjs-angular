@@ -31,6 +31,24 @@ export class TransactionForm {
     this.formState().mode === 'edit' ? this.text.TRANSACTION_EDIT_TITLE : this.text.TRANSACTION_ADD_TITLE,
   );
 
+  readonly selectedType = computed(() => this.transactionModel().type);
+
+  readonly categoryLabel = computed(() =>
+    this.selectedType() === 'income'
+      ? this.text.TRANSACTION_INCOME_SOURCE_LABEL
+      : this.text.TRANSACTION_CATEGORY_LABEL,
+  );
+
+  readonly categoryPlaceholder = computed(() =>
+    this.selectedType() === 'income'
+      ? this.text.TRANSACTION_INCOME_SOURCE_PLACEHOLDER
+      : this.text.TRANSACTION_CATEGORY_PLACEHOLDER,
+  );
+
+  readonly filteredCategories = computed(() =>
+    this.categories().filter((c) => c.type === this.selectedType()),
+  );
+
   constructor() {
     this.transactionForm = form(
       this.transactionModel,
@@ -50,6 +68,14 @@ export class TransactionForm {
       const values = this.formState().values;
       this.transactionModel.set({ ...values });
     });
+  }
+
+  onTypeChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value;
+    if (value !== 'expense' && value !== 'income') {
+      return;
+    }
+    this.transactionModel.update((current) => ({ ...current, type: value, categoryId: '' }));
   }
 
   close(): void {

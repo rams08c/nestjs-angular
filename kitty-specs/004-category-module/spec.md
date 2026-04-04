@@ -6,6 +6,8 @@
 - Provide authenticated users full CRUD on their own user categories
 - Provide global read access to system categories
 - Prevent update/delete for system categories
+- Income categories act as income sources — no separate income source module exists
+- System income categories (Salary, Freelance, Business, Interest) are seeded via migration
 
 ## API
 - `POST /categories`
@@ -54,7 +56,7 @@
 - Model: `Category`
 - `id`: `String @id @default(cuid())`
 - `name`: `String`
-- `type`: enum (`INCOME`, `EXPENSE`)
+- `type`: enum (`INCOME`, `EXPENSE`) — `INCOME` categories serve as income sources
 - `isSystem`: `Boolean @default(false)`
 - `ownerUserId`: `String?`
 - `createdAt`: `DateTime @default(now())`
@@ -63,6 +65,8 @@
 - Constraint: unique user category name per owner (`@@unique([ownerUserId, name])`)
 - Constraint: allow duplicate system names only if explicitly approved by business rule
 - Query index recommendation: `@@index([isSystem])`
+- Seed: system expense categories (Food, Groceries, Rent, Utilities, Transportation, Fuel, Healthcare, Insurance, Education, Entertainment, Dining Out, Shopping, Personal Care, Travel, Subscriptions)
+- Seed: system income categories (Salary, Freelance, Business, Interest)
 
 ## Tasks
 - Add/confirm `isSystem` in Prisma `Category` model

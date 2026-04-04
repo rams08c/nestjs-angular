@@ -3,6 +3,8 @@
 ## Goal
 - Enable authenticated users to create, view, update, and delete personal financial transactions
 - Support `expense` and `income` transaction types
+- `categoryId` represents both expense category and income source — category `type` determines the role
+- `transaction.type` must align with the referenced `category.type`
 - Scope all transactions to the authenticated user via JWT
 - Architecture supports future group-based transactions via optional `groupId`
 
@@ -29,7 +31,8 @@
 - `userId` is extracted from JWT payload, never from request body
 - Users may only read, update, or delete their own transactions
 - `amount` must be strictly greater than 0 (validated at DTO level)
-- `categoryId` must reference an existing category
+- `categoryId` must reference an existing category visible to the user (system or owned)
+- `transaction.type` must equal `category.type` (INCOME -> income, EXPENSE -> expense); return 400 on mismatch
 - `groupId` is optional, reserved for future group transactions
 - Return 403 if user attempts to access another user's transaction
 - Return 404 if transaction is not found

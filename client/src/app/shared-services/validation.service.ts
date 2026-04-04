@@ -88,6 +88,16 @@ export class ValidationService {
     ];
   }
 
+  validateTransactionType(type: string): ValidationResult {
+    if (!type) {
+      return { field: 'type', isValid: false, message: APP_ERROR_MESSAGES.TRANSACTION.TYPE_REQUIRED };
+    }
+    if (type !== 'income' && type !== 'expense') {
+      return { field: 'type', isValid: false, message: APP_ERROR_MESSAGES.TRANSACTION.TYPE_INVALID };
+    }
+    return { field: 'type', isValid: true };
+  }
+
   validateTransactionAmount(amount: string): ValidationResult {
     const trimmed = (amount || '').trim();
     if (!trimmed) {
@@ -121,8 +131,9 @@ export class ValidationService {
     return { field: 'date', isValid: true };
   }
 
-  validateTransactionForm(data: { amount: string; categoryId: string; date: string }): ValidationResult[] {
+  validateTransactionForm(data: { type: string; amount: string; categoryId: string; date: string }): ValidationResult[] {
     return [
+      this.validateTransactionType(data.type),
       this.validateTransactionAmount(data.amount),
       this.validateTransactionCategory(data.categoryId),
       this.validateTransactionDate(data.date),

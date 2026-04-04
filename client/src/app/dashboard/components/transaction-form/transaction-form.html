@@ -11,6 +11,24 @@
 
       <form class="space-y-3" [formRoot]="transactionForm">
         <div class="flex flex-col gap-1">
+          <label for="transaction-type" class="text-sm font-medium">{{ text.TRANSACTION_TYPE_LABEL }}</label>
+          <select
+            id="transaction-type"
+            class="select select-bordered w-full"
+            [formField]="transactionForm.type"
+            (change)="onTypeChange($event)"
+          >
+            <option value="expense">{{ text.TRANSACTION_TYPE_EXPENSE }}</option>
+            <option value="income">{{ text.TRANSACTION_TYPE_INCOME }}</option>
+          </select>
+          @if (transactionForm.type().invalid() && transactionForm.type().touched()) {
+            @for (error of transactionForm.type().errors(); track error) {
+              <p class="text-xs text-error">{{ error.message }}</p>
+            }
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
           <label for="transaction-amount" class="text-sm font-medium">{{ text.TRANSACTION_AMOUNT_LABEL }}</label>
           <input
             id="transaction-amount"
@@ -27,15 +45,15 @@
         </div>
 
         <div class="flex flex-col gap-1">
-          <label for="transaction-category" class="text-sm font-medium">{{ text.TRANSACTION_CATEGORY_LABEL }}</label>
+          <label for="transaction-category" class="text-sm font-medium">{{ categoryLabel() }}</label>
           <select
             id="transaction-category"
             class="select select-bordered w-full"
             [formField]="transactionForm.categoryId"
             [class.select-error]="transactionForm.categoryId().invalid() && transactionForm.categoryId().touched()"
           >
-            <option value="">{{ text.TRANSACTION_CATEGORY_PLACEHOLDER }}</option>
-            @for (category of categories(); track category.id) {
+            <option value="">{{ categoryPlaceholder() }}</option>
+            @for (category of filteredCategories(); track category.id) {
               <option [value]="category.id">{{ category.name }}</option>
             }
           </select>

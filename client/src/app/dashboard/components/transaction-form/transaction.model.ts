@@ -29,6 +29,7 @@ export interface TransactionItem {
 }
 
 export interface TransactionFormModel {
+  type: TransactionType;
   amount: string;
   categoryId: string;
   date: string;
@@ -50,6 +51,7 @@ export interface DeleteConfirmState {
 }
 
 export const defaultTransactionFormModel: TransactionFormModel = {
+  type: 'expense',
   amount: '',
   categoryId: '',
   date: '',
@@ -72,6 +74,7 @@ export const defaultDeleteConfirmState: DeleteConfirmState = {
 
 export const TransactionSchema = computed(() =>
   z.object({
+    type: z.enum(['expense', 'income'] as const),
     amount: z
       .string()
       .min(1, { message: APP_ERROR_MESSAGES.TRANSACTION.AMOUNT_REQUIRED })

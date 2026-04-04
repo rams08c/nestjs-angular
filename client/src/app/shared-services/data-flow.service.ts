@@ -230,6 +230,18 @@ export class DataFlowService {
     this.dashboardSignalService.setLoadingBudgets(true);
     this.dashboardSignalService.setLoadingGoals(true);
 
+    this.settingsApiService.getSettings().subscribe({
+      next: (res) =>
+        this.signalService.settings.set({
+          firstName: res.firstName ?? '',
+          lastName: res.lastName ?? '',
+          location: res.location ?? '',
+          address: res.address ?? '',
+          country: res.country ?? '',
+        }),
+      error: (err) => console.warn('Failed to load settings:', err),
+    });
+
     return forkJoin({
       transactions: this.transactionApiService.getTransactions(),
       categories: this.transactionApiService.getCategories(),
@@ -275,6 +287,7 @@ export class DataFlowService {
       isOpen: true,
       editingTransactionId: transaction.id,
       values: {
+        type: transaction.type,
         amount: String(transaction.amount),
         categoryId: transaction.categoryId,
         date: transaction.date.slice(0, 10),
@@ -376,13 +389,11 @@ export class DataFlowService {
   }
 
   createTransaction(values: TransactionFormModel): Observable<TransactionItem> {
-    const category = this.getCategoryById(values.categoryId);
-
     return this.transactionApiService
       .createTransaction({
         amount: Number(values.amount),
         categoryId: values.categoryId,
-        type: category?.type ?? 'expense',
+        type: values.type,
         date: values.date,
         description: values.description.trim() || undefined,
       })
@@ -399,13 +410,11 @@ export class DataFlowService {
       throw new Error('Missing editing transaction id');
     }
 
-    const category = this.getCategoryById(values.categoryId);
-
     return this.transactionApiService
       .updateTransaction(formState.editingTransactionId, {
         amount: Number(values.amount),
         categoryId: values.categoryId,
-        type: category?.type,
+        type: values.type,
         date: values.date,
         description: values.description.trim() || undefined,
       })
