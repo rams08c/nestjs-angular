@@ -32,15 +32,14 @@
           <label for="transaction-amount" class="text-sm font-medium">{{ text.TRANSACTION_AMOUNT_LABEL }}</label>
           <input
             id="transaction-amount"
-            type="number"
+            type="text"
+            inputmode="decimal"
             class="input input-bordered w-full"
             [formField]="transactionForm.amount"
             [class.input-error]="transactionForm.amount().invalid() && transactionForm.amount().touched()"
           />
           @if (transactionForm.amount().invalid() && transactionForm.amount().touched()) {
-            @for (error of transactionForm.amount().errors(); track error) {
-              <p class="text-xs text-error">{{ error.message }}</p>
-            }
+            <p class="text-xs text-error">{{ transactionForm.amount().errors()[0]?.message }}</p>
           }
         </div>
 

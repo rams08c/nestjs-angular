@@ -1,5 +1,5 @@
 import { Injectable, computed, inject } from '@angular/core';
-import { finalize, forkJoin, Observable, tap } from 'rxjs';
+import { finalize, forkJoin, map, Observable, tap } from 'rxjs';
 import {
   BudgetFormModel,
   BudgetItem,
@@ -17,9 +17,11 @@ import { DashboardSignalService } from '../dashboard/services/dashboard-signal.s
 import { TransactionApiService } from '../dashboard/services/transaction-api.service';
 import {
   defaultDeleteConfirmState,
+  defaultTransactionFilters,
   defaultTransactionFormModel,
   defaultTransactionFormState,
   TransactionCategory,
+  TransactionFilterParams,
   TransactionFormModel,
   TransactionItem,
 } from '../dashboard/components/transaction-form/transaction.model';
@@ -76,6 +78,14 @@ export class DataFlowService {
 
   get loadingCategories() {
     return this.dashboardSignalService.loadingCategories;
+  }
+
+  get transactionFilters() {
+    return this.dashboardSignalService.transactionFilters;
+  }
+
+  get transactionPaginationMeta() {
+    return this.dashboardSignalService.transactionPaginationMeta;
   }
 
   get budgets() {
@@ -185,18 +195,29 @@ export class DataFlowService {
     this.dashboardSignalService.setLoadingTransactions(true);
     this.dashboardSignalService.setLoadingCategories(true);
 
+    const filters = this.dashboardSignalService.transactionFilters();
     return forkJoin({
-      transactions: this.transactionApiService.getTransactions(),
+      paginatedTransactions: this.transactionApiService.getTransactions(filters),
       categories: this.transactionApiService.getCategories(),
     }).pipe(
-      tap(({ transactions, categories }) => {
-        this.dashboardSignalService.setTransactions(transactions);
+      tap(({ paginatedTransactions, categories }) => {
+        this.dashboardSignalService.setTransactions(paginatedTransactions.data);
+        this.dashboardSignalService.setTransactionPaginationMeta({
+          total: paginatedTransactions.total,
+          page: paginatedTransactions.page,
+          limit: paginatedTransactions.limit,
+          totalPages: paginatedTransactions.totalPages,
+        });
         this.dashboardSignalService.setCategories(categories);
       }),
       finalize(() => {
         this.dashboardSignalService.setLoadingTransactions(false);
         this.dashboardSignalService.setLoadingCategories(false);
       }),
+      map(({ paginatedTransactions, categories }) => ({
+        transactions: paginatedTransactions.data,
+        categories,
+      })),
     );
   }
 
@@ -242,14 +263,21 @@ export class DataFlowService {
       error: (err) => console.warn('Failed to load settings:', err),
     });
 
+    const filters = this.dashboardSignalService.transactionFilters();
     return forkJoin({
-      transactions: this.transactionApiService.getTransactions(),
+      paginatedTransactions: this.transactionApiService.getTransactions(filters),
       categories: this.transactionApiService.getCategories(),
       budgets: this.budgetApiService.getBudgets(),
       goals: this.goalApiService.getGoals(),
     }).pipe(
-      tap(({ transactions, categories, budgets, goals }) => {
-        this.dashboardSignalService.setTransactions(transactions);
+      tap(({ paginatedTransactions, categories, budgets, goals }) => {
+        this.dashboardSignalService.setTransactions(paginatedTransactions.data);
+        this.dashboardSignalService.setTransactionPaginationMeta({
+          total: paginatedTransactions.total,
+          page: paginatedTransactions.page,
+          limit: paginatedTransactions.limit,
+          totalPages: paginatedTransactions.totalPages,
+        });
         this.dashboardSignalService.setCategories(categories);
         this.dashboardSignalService.setBudgets(budgets);
         this.dashboardSignalService.setGoals(goals);
@@ -260,6 +288,12 @@ export class DataFlowService {
         this.dashboardSignalService.setLoadingBudgets(false);
         this.dashboardSignalService.setLoadingGoals(false);
       }),
+      map(({ paginatedTransactions, categories, budgets, goals }) => ({
+        transactions: paginatedTransactions.data,
+        categories,
+        budgets,
+        goals,
+      })),
     );
   }
 
@@ -450,6 +484,42 @@ export class DataFlowService {
     return this.dashboardSignalService
       .recentTransactions()
       .find((transaction) => transaction.id === transactionId);
+  }
+
+  applyTransactionFilters(filters: Partial<TransactionFilterParams>): void {
+    const current = this.dashboardSignalService.transactionFilters();
+    this.dashboardSignalService.setTransactionFilters({ ...current, ...filters, page: 1 });
+    this.reloadTransactions();
+  }
+
+  goToTransactionPage(page: number): void {
+    const current = this.dashboardSignalService.transactionFilters();
+    this.dashboardSignalService.setTransactionFilters({ ...current, page });
+    this.reloadTransactions();
+  }
+
+  resetTransactionFilters(): void {
+    this.dashboardSignalService.setTransactionFilters({ ...defaultTransactionFilters });
+    this.reloadTransactions();
+  }
+
+  private reloadTransactions(): void {
+    const filters = this.dashboardSignalService.transactionFilters();
+    this.dashboardSignalService.setLoadingTransactions(true);
+    this.transactionApiService
+      .getTransactions(filters)
+      .pipe(finalize(() => this.dashboardSignalService.setLoadingTransactions(false)))
+      .subscribe({
+        next: (res) => {
+          this.dashboardSignalService.setTransactions(res.data);
+          this.dashboardSignalService.setTransactionPaginationMeta({
+            total: res.total,
+            page: res.page,
+            limit: res.limit,
+            totalPages: res.totalPages,
+          });
+        },
+      });
   }
 
   setTransactionSubmitting(isSubmitting: boolean): void {

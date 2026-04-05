@@ -4,6 +4,22 @@ import { RecentTransactions } from './recent-transactions';
 import { DashboardSignalService } from '../../services/dashboard-signal.service';
 import { DataFlowService } from '../../../shared-services/data-flow.service';
 import { signal } from '@angular/core';
+import { defaultPaginationMeta, defaultTransactionFilters } from '../transaction-form/transaction.model';
+
+const makeTransaction = (overrides = {}) => ({
+  id: '1',
+  amount: 50,
+  type: 'expense' as const,
+  categoryId: '1',
+  categoryName: 'Food & Dining',
+  date: '2026-03-31',
+  description: 'Lunch',
+  userId: 'user1',
+  groupId: null,
+  createdAt: '2026-03-31T00:00:00Z',
+  updatedAt: '2026-03-31T00:00:00Z',
+  ...overrides,
+});
 
 describe('RecentTransactions', () => {
   let component: RecentTransactions;
@@ -15,21 +31,16 @@ describe('RecentTransactions', () => {
     const mockDataFlowService: Partial<DataFlowService> = {
       openEditDrawer: vi.fn(),
       openDeleteConfirm: vi.fn(),
-      transactionsForCurrentUser: signal([
-        {
-          id: '1',
-          amount: 50,
-          type: 'expense',
-          categoryId: '1',
-          categoryName: 'Food & Dining',
-          date: '2026-03-31',
-          description: 'Lunch',
-          userId: 'user1',
-          groupId: null,
-          createdAt: '2026-03-31T00:00:00Z',
-          updatedAt: '2026-03-31T00:00:00Z',
-        },
+      applyTransactionFilters: vi.fn(),
+      goToTransactionPage: vi.fn(),
+      resetTransactionFilters: vi.fn(),
+      transactionsForCurrentUser: signal([makeTransaction()]),
+      categories: signal([
+        { id: '1', name: 'Food & Dining', type: 'expense' as const, isSystem: true, ownerUserId: null, createdAt: '', updatedAt: '' },
       ]),
+      transactionFilters: signal({ ...defaultTransactionFilters }),
+      transactionPaginationMeta: signal({ ...defaultPaginationMeta, total: 1, totalPages: 1 }),
+      currencyCode: signal('USD'),
     };
 
     await TestBed.configureTestingModule({
@@ -52,9 +63,10 @@ describe('RecentTransactions', () => {
   });
 
   it('should display transactions from service', () => {
-    const transactions = component.transactions();
-    expect(transactions.length).toBeGreaterThan(0);
+    expect(component.transactions().length).toBeGreaterThan(0);
   });
+
+  // ---------- Category Badge Classes ----------
 
   describe('Category Badge Classes', () => {
     it('should return badge-accent for food categories', () => {
@@ -97,25 +109,180 @@ describe('RecentTransactions', () => {
     });
   });
 
+  // ---------- Action Methods ----------
+
   describe('Action Methods', () => {
     it('should call openEditDrawer on onView', () => {
-      const transactionId = '1';
-      component.onView(transactionId);
-      expect(dataFlowService.openEditDrawer).toHaveBeenCalledWith(transactionId);
+      component.onView('1');
+      expect(dataFlowService.openEditDrawer).toHaveBeenCalledWith('1');
     });
 
     it('should call openEditDrawer on onEdit', () => {
-      const transactionId = '1';
-      component.onEdit(transactionId);
-      expect(dataFlowService.openEditDrawer).toHaveBeenCalledWith(transactionId);
+      component.onEdit('1');
+      expect(dataFlowService.openEditDrawer).toHaveBeenCalledWith('1');
     });
 
     it('should call openDeleteConfirm on onDelete', () => {
-      const transactionId = '1';
-      component.onDelete(transactionId);
-      expect(dataFlowService.openDeleteConfirm).toHaveBeenCalledWith(transactionId);
+      component.onDelete('1');
+      expect(dataFlowService.openDeleteConfirm).toHaveBeenCalledWith('1');
     });
   });
+
+  // ---------- Filter Methods ----------
+
+  describe('Filter Methods', () => {
+    it('should call applyTransactionFilters with search value on search change', () => {
+      const event = { target: { value: 'lunch' } } as unknown as Event;
+      component.onSearchChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ search: 'lunch' });
+    });
+
+    it('should call applyTransactionFilters with undefined search when input is blank', () => {
+      const event = { target: { value: '  ' } } as unknown as Event;
+      component.onSearchChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ search: undefined });
+    });
+
+    it('should call applyTransactionFilters with type on type change', () => {
+      const event = { target: { value: 'expense' } } as unknown as Event;
+      component.onTypeFilterChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ type: 'expense' });
+    });
+
+    it('should call applyTransactionFilters with undefined type when all types selected', () => {
+      const event = { target: { value: '' } } as unknown as Event;
+      component.onTypeFilterChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ type: undefined });
+    });
+
+    it('should call applyTransactionFilters with categoryId on category change', () => {
+      const event = { target: { value: 'cat-1' } } as unknown as Event;
+      component.onCategoryFilterChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ categoryId: 'cat-1' });
+    });
+
+    it('should call applyTransactionFilters with undefined categoryId when all selected', () => {
+      const event = { target: { value: '' } } as unknown as Event;
+      component.onCategoryFilterChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ categoryId: undefined });
+    });
+
+    it('should call applyTransactionFilters with dateFrom on date from change', () => {
+      const event = { target: { value: '2026-01-01' } } as unknown as Event;
+      component.onDateFromChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ dateFrom: '2026-01-01' });
+    });
+
+    it('should call applyTransactionFilters with dateTo on date to change', () => {
+      const event = { target: { value: '2026-03-31' } } as unknown as Event;
+      component.onDateToChange(event);
+      expect(dataFlowService.applyTransactionFilters).toHaveBeenCalledWith({ dateTo: '2026-03-31' });
+    });
+
+    it('should call resetTransactionFilters on resetFilters', () => {
+      component.resetFilters();
+      expect(dataFlowService.resetTransactionFilters).toHaveBeenCalled();
+    });
+  });
+
+  // ---------- Pagination Methods ----------
+
+  describe('Pagination Methods', () => {
+    it('should call goToTransactionPage with previous page on prevPage', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 2, limit: 10, totalPages: 2,
+      });
+      component.prevPage();
+      expect(dataFlowService.goToTransactionPage).toHaveBeenCalledWith(1);
+    });
+
+    it('should not navigate on prevPage when on first page', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 1, limit: 10, totalPages: 2,
+      });
+      component.prevPage();
+      expect(dataFlowService.goToTransactionPage).not.toHaveBeenCalled();
+    });
+
+    it('should call goToTransactionPage with next page on nextPage', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 1, limit: 10, totalPages: 2,
+      });
+      component.nextPage();
+      expect(dataFlowService.goToTransactionPage).toHaveBeenCalledWith(2);
+    });
+
+    it('should not navigate on nextPage when on last page', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 2, limit: 10, totalPages: 2,
+      });
+      component.nextPage();
+      expect(dataFlowService.goToTransactionPage).not.toHaveBeenCalled();
+    });
+
+    it('should call goToTransactionPage with specific page on goToPage', () => {
+      component.goToPage(3);
+      expect(dataFlowService.goToTransactionPage).toHaveBeenCalledWith(3);
+    });
+
+    it('hasPrev should be false on page 1', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 1, limit: 10, totalPages: 2,
+      });
+      expect(component.hasPrev()).toBe(false);
+    });
+
+    it('hasPrev should be true on page 2+', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 2, limit: 10, totalPages: 2,
+      });
+      expect(component.hasPrev()).toBe(true);
+    });
+
+    it('hasNext should be false on last page', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 2, limit: 10, totalPages: 2,
+      });
+      expect(component.hasNext()).toBe(false);
+    });
+
+    it('hasNext should be true when not on last page', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 20, page: 1, limit: 10, totalPages: 2,
+      });
+      expect(component.hasNext()).toBe(true);
+    });
+
+    it('should generate correct pageNumbers array', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 30, page: 1, limit: 10, totalPages: 3,
+      });
+      expect(component.pageNumbers()).toEqual([1, 2, 3]);
+    });
+
+    it('rangeStart should compute correctly', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 25, page: 2, limit: 10, totalPages: 3,
+      });
+      expect(component.rangeStart()).toBe(11);
+    });
+
+    it('rangeEnd should not exceed total', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 25, page: 3, limit: 10, totalPages: 3,
+      });
+      expect(component.rangeEnd()).toBe(25);
+    });
+
+    it('rangeStart should be 0 when total is 0', () => {
+      (dataFlowService.transactionPaginationMeta as any) = signal({
+        total: 0, page: 1, limit: 10, totalPages: 0,
+      });
+      expect(component.rangeStart()).toBe(0);
+    });
+  });
+
+  // ---------- Loading State ----------
 
   describe('Loading State', () => {
     it('should display loading state', () => {
@@ -131,6 +298,8 @@ describe('RecentTransactions', () => {
     });
   });
 
+  // ---------- Empty State ----------
+
   describe('Empty State', () => {
     it('should handle empty transaction list', () => {
       (dataFlowService.transactionsForCurrentUser as any) = signal([]);
@@ -139,65 +308,41 @@ describe('RecentTransactions', () => {
     });
   });
 
+  // ---------- Transaction Display ----------
+
   describe('Transaction Display', () => {
     it('should display transaction amount', () => {
-      const transactions = component.transactions();
-      if (transactions.length > 0) {
-        expect(transactions[0].amount).toBeDefined();
-      }
+      expect(component.transactions()[0].amount).toBeDefined();
     });
 
     it('should display transaction date', () => {
-      const transactions = component.transactions();
-      if (transactions.length > 0) {
-        expect(transactions[0].date).toBeDefined();
-      }
+      expect(component.transactions()[0].date).toBeDefined();
     });
 
     it('should display transaction category', () => {
-      const transactions = component.transactions();
-      if (transactions.length > 0) {
-        expect(transactions[0].categoryName).toBeDefined();
-      }
+      expect(component.transactions()[0].categoryName).toBeDefined();
     });
 
     it('should display transaction description if available', () => {
-      const transactions = component.transactions();
-      if (transactions.length > 0 && transactions[0].description) {
-        expect(transactions[0].description).toBeTruthy();
-      }
+      expect(component.transactions()[0].description).toBeTruthy();
     });
   });
+
+  // ---------- Transaction Type Handling ----------
 
   describe('Transaction Type Handling', () => {
     it('should correctly identify expense transactions', () => {
-      const transactions = component.transactions();
-      const expenseTransaction = transactions.find(t => t.type === 'expense');
-      expect(expenseTransaction).toBeDefined();
-      if (expenseTransaction) {
-        expect(expenseTransaction.type).toBe('expense');
-      }
+      const tx = component.transactions().find(t => t.type === 'expense');
+      expect(tx).toBeDefined();
     });
 
     it('should correctly identify income transactions', () => {
-      const incomeTransaction = {
-        id: '2',
-        amount: 100,
-        type: 'income' as const,
-        categoryId: '2',
-        categoryName: 'Salary',
-        date: '2026-03-31',
-        description: 'Monthly salary',
-        userId: 'user1',
-        groupId: null,
-        createdAt: '2026-03-31T00:00:00Z',
-        updatedAt: '2026-03-31T00:00:00Z',
-      };
-      (dataFlowService.transactionsForCurrentUser as any) = signal([incomeTransaction]);
+      (dataFlowService.transactionsForCurrentUser as any) = signal([
+        makeTransaction({ id: '2', type: 'income', categoryName: 'Salary', description: 'Monthly salary' }),
+      ]);
       fixture.detectChanges();
-
-      const transactions = component.transactions();
-      expect(transactions[0].type).toBe('income');
+      expect(component.transactions()[0].type).toBe('income');
     });
   });
 });
+

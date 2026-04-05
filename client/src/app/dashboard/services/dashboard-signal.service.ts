@@ -10,9 +10,13 @@ import {
 } from '../../budget-goal/budget-goal.model';
 import {
   defaultDeleteConfirmState,
+  defaultPaginationMeta,
+  defaultTransactionFilters,
   defaultTransactionFormState,
   DeleteConfirmState,
+  PaginationMeta,
   TransactionCategory,
+  TransactionFilterParams,
   TransactionFormState,
   TransactionItem,
 } from '../components/transaction-form/transaction.model';
@@ -56,6 +60,9 @@ export class DashboardSignalService {
   readonly categories = signal<TransactionCategory[]>([]);
   readonly budgets = signal<BudgetItem[]>([]);
   readonly goals = signal<GoalItem[]>([]);
+
+  readonly transactionFilters = signal<TransactionFilterParams>({ ...defaultTransactionFilters });
+  readonly transactionPaginationMeta = signal<PaginationMeta>({ ...defaultPaginationMeta });
 
   readonly loadingTransactions = signal(false);
   readonly loadingCategories = signal(false);
@@ -110,6 +117,14 @@ export class DashboardSignalService {
 
   setTransactions(transactions: TransactionItem[]): void {
     this.recentTransactions.set(transactions);
+  }
+
+  setTransactionFilters(filters: TransactionFilterParams): void {
+    this.transactionFilters.set(filters);
+  }
+
+  setTransactionPaginationMeta(meta: PaginationMeta): void {
+    this.transactionPaginationMeta.set(meta);
   }
 
   setCategories(categories: TransactionCategory[]): void {

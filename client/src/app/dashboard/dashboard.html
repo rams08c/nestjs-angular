@@ -130,64 +130,8 @@
               </div>
             </div>
 
-            <div class="flex flex-wrap items-end gap-3 rounded-xl border border-base-300 bg-base-100 p-4 shadow-sm">
-              <div class="flex flex-wrap items-end gap-3">
-                <div class="form-control gap-2">
-                  <label class="label p-0" for="overviewDateInput">
-                    <span class="label-text text-sm font-medium">Date</span>
-                  </label>
-                  <input id="overviewDateInput" type="date" class="input input-bordered h-10 min-h-10 w-full min-w-40" aria-label="Filter by date" />
-                </div>
-                <div class="form-control gap-2">
-                  <label class="label p-0" for="overviewCategoryDropdown">
-                    <span class="label-text text-sm font-medium">Category</span>
-                  </label>
-                  <select
-                    id="overviewCategoryDropdown"
-                    class="select select-bordered h-10 min-h-10 w-full min-w-40"
-                    [value]="categoryFilter()"
-                    #overviewCategorySelect
-                    (change)="onCategoryFilterChange(overviewCategorySelect.value)"
-                    aria-label="Filter by category"
-                  >
-                    <option value="all">All Categories</option>
-                    <option value="food">Food & Dining</option>
-                    <option value="transport">Transport</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="utilities">Utilities</option>
-                    <option value="shopping">Shopping</option>
-                  </select>
-                </div>
-                <div class="form-control gap-2">
-                  <label class="label p-0" for="overviewAmountDropdown">
-                    <span class="label-text text-sm font-medium">Amount</span>
-                  </label>
-                  <select id="overviewAmountDropdown" class="select select-bordered h-10 min-h-10 w-full min-w-40" aria-label="Filter by amount">
-                    <option value="all">All Amounts</option>
-                    <option value="under50">Under {{ currencySymbol() }}50</option>
-                    <option value="50to100">{{ currencySymbol() }}50 - {{ currencySymbol() }}100</option>
-                    <option value="over100">Over {{ currencySymbol() }}100</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-control min-w-[250px] flex-1 gap-2">
-                <label class="label p-0" for="overviewSearchBox">
-                  <span class="label-text text-sm font-medium">Search</span>
-                </label>
-                <input
-                  id="overviewSearchBox"
-                  type="text"
-                  placeholder="Search by merchant..."
-                  class="input input-bordered h-10 min-h-10 w-full"
-                  [value]="searchQuery()"
-                  #overviewSearchInput
-                  (input)="onSearchChange(overviewSearchInput.value)"
-                  aria-label="Search transactions"
-                />
-              </div>
-
-              <button type="button" class="btn btn-primary h-10 min-h-10 self-end px-4 lg:ml-auto" (click)="openAddTransaction()" [disabled]="!isAuthenticated()">
+            <div class="flex justify-end">
+              <button type="button" class="btn btn-primary btn-sm" (click)="openAddTransaction()" [disabled]="!isAuthenticated()">
                 + Add Transaction
               </button>
             </div>
@@ -209,64 +153,6 @@
                   </div>
                   <button type="button" class="btn btn-primary" (click)="openAddTransaction()" [disabled]="!isAuthenticated()">+ Add Transaction</button>
                 </div>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap items-end gap-3 rounded-xl border border-base-300 bg-base-100 p-4 shadow-sm">
-              <div class="flex flex-wrap items-end gap-3">
-                <div class="form-control gap-2">
-                  <label class="label p-0" for="transactionDateInput">
-                    <span class="label-text text-sm font-medium">Date</span>
-                  </label>
-                  <input id="transactionDateInput" type="date" class="input input-bordered h-10 min-h-10 w-full min-w-40" aria-label="Filter by date" />
-                </div>
-                <div class="form-control gap-2">
-                  <label class="label p-0" for="transactionCategoryDropdown">
-                    <span class="label-text text-sm font-medium">Category</span>
-                  </label>
-                  <select
-                    id="transactionCategoryDropdown"
-                    class="select select-bordered h-10 min-h-10 w-full min-w-40"
-                    [value]="categoryFilter()"
-                    #transactionCategorySelect
-                    (change)="onCategoryFilterChange(transactionCategorySelect.value)"
-                    aria-label="Filter by category"
-                  >
-                    <option value="all">All Categories</option>
-                    <option value="food">Food & Dining</option>
-                    <option value="transport">Transport</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="utilities">Utilities</option>
-                    <option value="shopping">Shopping</option>
-                  </select>
-                </div>
-                <div class="form-control gap-2">
-                  <label class="label p-0" for="transactionAmountDropdown">
-                    <span class="label-text text-sm font-medium">Amount</span>
-                  </label>
-                  <select id="transactionAmountDropdown" class="select select-bordered h-10 min-h-10 w-full min-w-40" aria-label="Filter by amount">
-                    <option value="all">All Amounts</option>
-                    <option value="under50">Under {{ currencySymbol() }}50</option>
-                    <option value="50to100">{{ currencySymbol() }}50 - {{ currencySymbol() }}100</option>
-                    <option value="over100">Over {{ currencySymbol() }}100</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-control min-w-[250px] flex-1 gap-2">
-                <label class="label p-0" for="transactionSearchBox">
-                  <span class="label-text text-sm font-medium">Search</span>
-                </label>
-                <input
-                  id="transactionSearchBox"
-                  type="text"
-                  placeholder="Search by merchant..."
-                  class="input input-bordered h-10 min-h-10 w-full"
-                  [value]="searchQuery()"
-                  #transactionSearchInput
-                  (input)="onSearchChange(transactionSearchInput.value)"
-                  aria-label="Search transactions"
-                />
               </div>
             </div>
 

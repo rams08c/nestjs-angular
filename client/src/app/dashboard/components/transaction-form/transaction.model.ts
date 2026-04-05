@@ -4,6 +4,47 @@ import { APP_ERROR_MESSAGES } from '../../../app.constant';
 
 export type TransactionType = 'expense' | 'income';
 
+export interface TransactionFilterParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  type?: TransactionType;
+  categoryId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  amountMin?: number;
+  amountMax?: number;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedTransactionResponse {
+  data: TransactionItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export const DEFAULT_PAGE_SIZE = 10;
+
+export const defaultTransactionFilters: TransactionFilterParams = {
+  page: 1,
+  limit: DEFAULT_PAGE_SIZE,
+};
+
+export const defaultPaginationMeta: PaginationMeta = {
+  total: 0,
+  page: 1,
+  limit: DEFAULT_PAGE_SIZE,
+  totalPages: 0,
+};
+
 export interface TransactionCategory {
   id: string;
   name: string;
@@ -78,7 +119,7 @@ export const TransactionSchema = computed(() =>
     amount: z
       .string()
       .min(1, { message: APP_ERROR_MESSAGES.TRANSACTION.AMOUNT_REQUIRED })
-      .refine((value) => Number.isFinite(Number(value)) && Number(value) > 0, {
+      .refine((value) => value.length === 0 || (Number.isFinite(Number(value)) && Number(value) > 0), {
         message: APP_ERROR_MESSAGES.TRANSACTION.AMOUNT_POSITIVE,
       }),
     categoryId: z.string().min(1, { message: APP_ERROR_MESSAGES.TRANSACTION.CATEGORY_REQUIRED }),

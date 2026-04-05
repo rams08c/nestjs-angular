@@ -12,6 +12,7 @@ import {
   TransactionInputType,
 } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { QueryTransactionDto } from './dto/query-transaction.dto';
 
 type TransactionWithCategory = Prisma.TransactionGetPayload<{
   include: { category: { select: { type: true } } };
@@ -30,6 +31,17 @@ type TransactionResponse = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type PaginatedTransactionResponse = {
+  data: TransactionResponse[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
 
 @Injectable()
 export class TransactionsService {
@@ -60,18 +72,58 @@ export class TransactionsService {
     return this.toResponse(created);
   }
 
-  async findAll(userId: string): Promise<TransactionResponse[]> {
-    const transactions = await this.prisma.transaction.findMany({
-      where: { ownerUserId: userId },
-      orderBy: { transactionDate: 'desc' },
-      include: {
-        category: {
-          select: { type: true },
-        },
-      },
-    });
+  async findAll(userId: string, query: QueryTransactionDto = {}): Promise<PaginatedTransactionResponse> {
+    const page = query.page ?? DEFAULT_PAGE;
+    const limit = query.limit ?? DEFAULT_LIMIT;
+    const skip = (page - 1) * limit;
 
-    return transactions.map((item) => this.toResponse(item));
+    const where: Prisma.TransactionWhereInput = { ownerUserId: userId };
+
+    if (query.search) {
+      where.note = { contains: query.search, mode: 'insensitive' };
+    }
+
+    if (query.type) {
+      const categoryType = query.type === TransactionInputType.EXPENSE ? CategoryType.EXPENSE : CategoryType.INCOME;
+      where.category = { type: categoryType };
+    }
+
+    if (query.categoryId) {
+      where.categoryId = query.categoryId;
+    }
+
+    if (query.dateFrom || query.dateTo) {
+      where.transactionDate = {
+        ...(query.dateFrom ? { gte: new Date(query.dateFrom) } : {}),
+        ...(query.dateTo ? { lte: new Date(query.dateTo) } : {}),
+      };
+    }
+
+    if (query.amountMin != null || query.amountMax != null) {
+      where.amount = {
+        ...(query.amountMin != null ? { gte: new Prisma.Decimal(query.amountMin) } : {}),
+        ...(query.amountMax != null ? { lte: new Prisma.Decimal(query.amountMax) } : {}),
+      };
+    }
+
+    const [transactions, total] = await Promise.all([
+      this.prisma.transaction.findMany({
+        where,
+        orderBy: { transactionDate: 'desc' },
+        skip,
+        take: limit,
+        include: { category: { select: { type: true } } },
+      }),
+      this.prisma.transaction.count({ where }),
+    ]);
+
+    return {
+      data: transactions.map((item) => this.toResponse(item)),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(userId: string, id: string): Promise<TransactionResponse> {

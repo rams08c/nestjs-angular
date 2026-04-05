@@ -8,9 +8,11 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CurrentUserId } from '../auth/current-user-id.decorator';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { QueryTransactionDto } from './dto/query-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionsService } from './transactions.service';
 
@@ -24,8 +26,8 @@ export class TransactionsController {
   }
 
   @Get()
-  findAll(@CurrentUserId() userId: string) {
-    return this.transactionsService.findAll(userId);
+  findAll(@CurrentUserId() userId: string, @Query() query: QueryTransactionDto) {
+    return this.transactionsService.findAll(userId, query);
   }
 
   @Get(':id')

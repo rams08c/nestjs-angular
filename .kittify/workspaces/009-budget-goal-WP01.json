@@ -1,0 +1,12 @@
+{
+  "wp_id": "WP01",
+  "feature_slug": "009-budget-goal",
+  "worktree_path": ".worktrees/009-budget-goal-WP01",
+  "branch_name": "009-budget-goal-WP01",
+  "base_branch": "main",
+  "base_commit": "c38ef25aa63d0d1e056401604017b2040bcfa469",
+  "dependencies": [],
+  "created_at": "2026-03-31T05:18:09.039274+00:00",
+  "created_by": "implement-command",
+  "vcs_backend": "git"
+}

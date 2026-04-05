@@ -4,8 +4,117 @@
     <h3 class="font-semibold text-base-content text-lg">{{ text.RECENT_TRANSACTIONS_TITLE }}</h3>
   </div>
 
+  <!-- Filter Bar -->
+  <div class="px-6 pt-4 pb-0 space-y-2">
+    <!-- Row 1: Search · Type · Category · Amount -->
+    <div class="flex flex-wrap gap-2 items-end">
+      <!-- Search -->
+      <div class="flex flex-col gap-1 flex-1 min-w-48">
+        <label for="tx-search" class="text-xs font-medium text-base-content/70">Search</label>
+        <input
+          id="tx-search"
+          type="search"
+          class="input input-bordered input-sm w-full"
+          [placeholder]="text.FILTER_SEARCH_PLACEHOLDER"
+          [value]="filterParams().search ?? ''"
+          (input)="onSearchChange($event)"
+          aria-label="Search transactions"
+        />
+      </div>
+
+      <!-- Type filter -->
+      <div class="flex flex-col gap-1 min-w-28">
+        <label for="tx-type-filter" class="text-xs font-medium text-base-content/70">Type</label>
+        <select
+          id="tx-type-filter"
+          class="select select-bordered select-sm w-full"
+          (change)="onTypeFilterChange($event)"
+          aria-label="Filter by type"
+        >
+          <option value="" [selected]="!filterParams().type">{{ text.FILTER_ALL_TYPES }}</option>
+          <option value="expense" [selected]="filterParams().type === 'expense'">{{ text.FILTER_TYPE_EXPENSE }}</option>
+          <option value="income" [selected]="filterParams().type === 'income'">{{ text.FILTER_TYPE_INCOME }}</option>
+        </select>
+      </div>
+
+      <!-- Category filter -->
+      <div class="flex flex-col gap-1 min-w-36">
+        <label for="tx-category-filter" class="text-xs font-medium text-base-content/70">{{ text.FILTER_CATEGORY_LABEL }}</label>
+        <select
+          id="tx-category-filter"
+          class="select select-bordered select-sm w-full"
+          (change)="onCategoryFilterChange($event)"
+          aria-label="Filter by category"
+        >
+          <option value="" [selected]="!filterParams().categoryId">{{ text.FILTER_ALL_CATEGORIES }}</option>
+          @for (cat of categories(); track cat.id) {
+            <option [value]="cat.id" [selected]="cat.id === filterParams().categoryId">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Amount Range filter -->
+      <div class="flex flex-col gap-1 min-w-36">
+        <label for="tx-amount-filter" class="text-xs font-medium text-base-content/70">{{ text.FILTER_AMOUNT_LABEL }}</label>
+        <select
+          id="tx-amount-filter"
+          class="select select-bordered select-sm w-full"
+          (change)="onAmountRangeChange($event)"
+          aria-label="Filter by amount range"
+        >
+          @for (range of amountRanges(); track range.value) {
+            <option [value]="range.value" [selected]="range.value === selectedAmountRange()">{{ range.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <!-- Row 2: Date From · Date To · Reset -->
+    <div class="flex flex-wrap gap-2 items-end">
+      <!-- Date From -->
+      <div class="flex flex-col gap-1 min-w-36">
+        <label for="tx-date-from" class="text-xs font-medium text-base-content/70">{{ text.FILTER_FROM_LABEL }}</label>
+        <input
+          id="tx-date-from"
+          type="date"
+          class="input input-bordered input-sm w-full"
+          [value]="filterParams().dateFrom ?? ''"
+          (change)="onDateFromChange($event)"
+          aria-label="Filter from date"
+        />
+      </div>
+
+      <!-- Date To -->
+      <div class="flex flex-col gap-1 min-w-36">
+        <label for="tx-date-to" class="text-xs font-medium text-base-content/70">To</label>
+        <input
+          id="tx-date-to"
+          type="date"
+          class="input input-bordered input-sm w-full"
+          [value]="filterParams().dateTo ?? ''"
+          (change)="onDateToChange($event)"
+          aria-label="Filter to date"
+        />
+      </div>
+
+      <!-- Reset -->
+      <button
+        type="button"
+        class="btn btn-outline btn-sm self-end gap-1"
+        (click)="resetFilters()"
+        aria-label="Reset filters"
+      >
+        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-none stroke-current" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 3v5h5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {{ text.FILTER_RESET_BTN }}
+      </button>
+    </div>
+  </div>
+
   <!-- Card Content -->
-  <div class="card-body px-0 pt-6 pb-4">
+  <div class="card-body px-0 pt-4 pb-4">
     @if (loadingTransactions()) {
       <div class="px-6 space-y-2" aria-live="polite">
         <div class="skeleton h-12 w-full"></div>
@@ -47,7 +156,7 @@
 
                   <!-- Category Badge Column -->
                   <td class="py-4 px-4">
-                    <span 
+                    <span
                       class="badge badge-lg font-semibold text-xs"
                       [class]="getCategoryBadgeClass(tx.categoryName)"
                     >
@@ -74,7 +183,7 @@
 
                   <!-- Amount Column -->
                   <td class="py-4 px-4 text-right">
-                    <span 
+                    <span
                       class="text-sm font-semibold"
                       [class]="tx.type === 'expense' ? 'text-error' : 'text-success'"
                     >
@@ -85,17 +194,6 @@
                   <!-- Actions Column -->
                   <td class="py-4 px-4 text-right">
                     <div class="flex items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        class="btn btn-ghost btn-xs"
-                        (click)="onView(tx.id)"
-                        aria-label="View transaction details"
-                        title="View Details"
-                      >
-                        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current" aria-hidden="true">
-                          <path d="M12 5C7 5 2.73 8.11 1 12.46c1.73 4.35 6 7.54 11 7.54s9.27-3.19 11-7.54C21.27 8.11 17 5 12 5m0 9c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                      </button>
                       <button
                         type="button"
                         class="btn btn-ghost btn-xs"
@@ -130,6 +228,61 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Pagination -->
+        @if (paginationMeta().totalPages > 0) {
+          <div class="flex items-center justify-between gap-3 px-6 pt-4 flex-wrap" aria-label="Pagination controls">
+            <!-- Results summary -->
+            <p class="text-sm text-base-content/60 whitespace-nowrap">
+              Showing
+              <span class="font-medium text-base-content">{{ rangeStart() }}</span>
+              –
+              <span class="font-medium text-base-content">{{ rangeEnd() }}</span>
+              of
+              <span class="font-medium text-base-content">{{ paginationMeta().total }}</span>
+              results
+            </p>
+
+            <!-- Controls: join pill -->
+            <div class="join" role="navigation" aria-label="Page navigation">
+              <button
+                type="button"
+                class="join-item btn btn-sm btn-outline"
+                [disabled]="!hasPrev()"
+                (click)="prevPage()"
+                aria-label="Previous page"
+              >
+                <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Prev</span>
+              </button>
+
+              <select
+                class="join-item select select-sm select-bordered"
+                (change)="goToPage(+$any($event.target).value)"
+                aria-label="Select page"
+              >
+                @for (p of pageNumbers(); track p) {
+                  <option [value]="p" [selected]="p === paginationMeta().page">Page {{ p }} of {{ paginationMeta().totalPages }}</option>
+                }
+              </select>
+
+              <button
+                type="button"
+                class="join-item btn btn-sm btn-outline"
+                [disabled]="!hasNext()"
+                (click)="nextPage()"
+                aria-label="Next page"
+              >
+                <span>Next</span>
+                <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none stroke-current" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
       }
     }
   </div>

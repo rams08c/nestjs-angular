@@ -1,8 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { APP_API_ENDPOINTS } from '../../app.constant';
-import { TransactionCategory, TransactionItem, TransactionType } from '../components/transaction-form/transaction.model';
+import {
+  PaginatedTransactionResponse,
+  TransactionCategory,
+  TransactionFilterParams,
+  TransactionItem,
+  TransactionType,
+} from '../components/transaction-form/transaction.model';
 
 export interface TransactionPayload {
   amount: number;
@@ -17,8 +23,20 @@ export interface TransactionPayload {
 export class TransactionApiService {
   private http = inject(HttpClient);
 
-  getTransactions(): Observable<TransactionItem[]> {
-    return this.http.get<TransactionItem[]>(APP_API_ENDPOINTS.TRANSACTIONS.LIST);
+  getTransactions(filters?: TransactionFilterParams): Observable<PaginatedTransactionResponse> {
+    let params = new HttpParams();
+    if (filters) {
+      if (filters.page != null) params = params.set('page', String(filters.page));
+      if (filters.limit != null) params = params.set('limit', String(filters.limit));
+      if (filters.search) params = params.set('search', filters.search);
+      if (filters.type) params = params.set('type', filters.type);
+      if (filters.categoryId) params = params.set('categoryId', filters.categoryId);
+      if (filters.dateFrom) params = params.set('dateFrom', filters.dateFrom);
+      if (filters.dateTo) params = params.set('dateTo', filters.dateTo);
+      if (filters.amountMin != null) params = params.set('amountMin', String(filters.amountMin));
+      if (filters.amountMax != null) params = params.set('amountMax', String(filters.amountMax));
+    }
+    return this.http.get<PaginatedTransactionResponse>(APP_API_ENDPOINTS.TRANSACTIONS.LIST, { params });
   }
 
   getCategories(): Observable<TransactionCategory[]> {
